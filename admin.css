@@ -5,7 +5,7 @@
 .cp-login-card{align-items:center;text-align:center}
 .cp-login-card .ed-logo{align-self:center}
 .cp-login-card .primary{width:100%}
-.cp-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:6px}
+.cp-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:6px}
 .cp-form>div{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cp-form .primary{padding:11px 18px}
 .cp-result{margin-top:10px;padding:14px;border-radius:14px;background:#f3fbf6;border:1px solid #bfeccf;display:flex;flex-direction:column;gap:10px}
@@ -30,3 +30,5 @@
   .cp-search{max-width:none;width:100%}
 }
 .cp-del{margin-inline-start:auto}
+.cp-tpl{width:auto;font-size:12.5px;padding:5px 8px;border-radius:9px}
+.cp-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
