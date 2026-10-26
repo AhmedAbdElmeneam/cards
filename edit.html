@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#f4f5fb">
+<meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>Profile Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Alexandria:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="edit.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} img{max-width:100%}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
+</style>
+</head>
+<body class="ed">
+<div id="ed-lock" class="ed-login" hidden>
+  <div class="ed-card ed-login-card">
+    <div class="ed-logo">MENEAM</div>
+    <div class="ed-lock-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1>اللينك ده مش شغال</h1>
+    <p id="lock-msg">لينك التعديل غلط أو اتلغى. افتحه من الرسالة اللي جاتلك مع الكارت بالظبط، أو كلّم صاحب البراند يبعتلك لينك جديد.</p>
+  </div>
+</div>
+
+<div id="ed-app" hidden>
+  <header class="ed-top">
+    <div class="ed-brand"><span class="ed-logo">MENEAM</span><span class="ed-title">محرر الصفحة</span></div>
+    <span class="ed-mode" id="ed-mode"></span>
+    <div class="ed-actions">
+      <a class="ed-btn ghost" id="ed-view" href="index.html" target="_blank" rel="noopener">افتح الصفحة ↗</a>
+      <button class="ed-btn primary ed-save" type="button">محفوظ ✓</button>
+    </div>
+  </header>
+
+  <div class="ed-tabs" role="tablist">
+    <button type="button" data-tab="form" class="on">تعديل</button>
+    <button type="button" data-tab="preview">معاينة</button>
+  </div>
+
+  <div class="ed-main">
+    <div class="ed-form">
+      <p class="ed-note" id="ed-note"></p>
+      <section class="ed-card">
+        <h2><span>01</span>الصورة والاسم</h2>
+        <div class="ed-photo">
+          <div class="ed-avatar" id="ed-avatar"></div>
+          <div class="ed-photo-btns">
+            <label class="ed-btn ghost" for="ed-photo">غيّر الصورة</label>
+            <input id="ed-photo" type="file" accept="image/*" hidden>
+            <button class="ed-link" id="ed-photo-del" type="button">شيل الصورة</button>
+            <small>الصورة بتتقص مربع لوحدها</small>
+          </div>
+        </div>
+        <label for="f-name">الاسم</label><input class="ed-in" id="f-name" placeholder="Ahmed Abd El-Meneam">
+        <label for="f-status">الحالة (النقطة الخضرا)</label><input class="ed-in" id="f-status" placeholder="Open to new projects">
+      </section>
+
+      <section class="ed-card">
+        <h2><span>02</span>الوصف</h2>
+        <label for="f-bio">نبذة عنك</label>
+        <textarea class="ed-in" id="f-bio" rows="4" dir="auto"></textarea>
+        <small class="ed-hint">حط الكلمة بين نجمتين عشان تبقى بولد: <code>**Lawyer**</code></small>
+        <label for="f-term">سطر الكود الأسود (اختياري)</label><input class="ed-in" id="f-term" dir="ltr" placeholder="flutter run --release ahmed">
+      </section>
+
+      <section class="ed-card">
+        <h2><span>03</span>الزرار الرئيسي</h2>
+        <p class="ed-sub">الزرار الكبير الملون اللي فوق اللينكات. سيب اللينك فاضي لو مش عاوزه.</p>
+        <div class="ed-two">
+          <div><label for="f-ptype">النوع</label><select class="ed-in" id="f-ptype"></select></div>
+          <div><label for="f-pval">الرقم أو اللينك</label><input class="ed-in" id="f-pval" dir="ltr"></div>
+        </div>
+        <div class="ed-two">
+          <div><label for="f-plab">العنوان</label><input class="ed-in" id="f-plab" placeholder="WhatsApp"></div>
+          <div><label for="f-psub">السطر الصغير</label><input class="ed-in" id="f-psub" placeholder="Message me directly"></div>
+        </div>
+      </section>
+
+      <section class="ed-card">
+        <h2><span>04</span>السوشيال</h2>
+        <p class="ed-sub">اكتب اليوزر بس (زي <code dir="ltr">@ahmed</code>) أو الصق اللينك كامل. رتّبهم بالأسهم.</p>
+        <div id="ed-links" class="ed-list"></div>
+        <button class="ed-btn add" type="button" data-add="links">+ ضيف لينك</button>
+      </section>
+
+      <section class="ed-card">
+        <h2><span>05</span>الدفع</h2>
+        <p class="ed-sub">لينكات InstaPay أو telda أو أي لينك دفع.</p>
+        <div id="ed-pay" class="ed-list"></div>
+        <button class="ed-btn add" type="button" data-add="pay">+ ضيف لينك دفع</button>
+      </section>
+
+      <section class="ed-card">
+        <h2><span>06</span>التواصل</h2>
+        <div class="ed-two">
+          <div><label for="f-phone">الموبايل</label><input class="ed-in" id="f-phone" dir="ltr" inputmode="tel"></div>
+          <div><label for="f-email">الإيميل</label><input class="ed-in" id="f-email" dir="ltr" type="email"></div>
+        </div>
+      </section>
+
+      <section class="ed-card">
+        <h2><span>07</span>الشكل</h2>
+        <label>الألوان</label>
+        <div class="ed-skins" id="ed-skins"></div>
+        <div class="ed-two">
+          <div><label for="f-brand">الاسم اللي تحت</label><input class="ed-in" id="f-brand" dir="ltr" placeholder="MENEAM"></div>
+          <div><label for="f-tag">الجملة اللي تحت</label><input class="ed-in" id="f-tag" dir="ltr" placeholder="tap · connect · build"></div>
+        </div>
+      </section>
+
+      <div class="ed-foot"><button class="ed-link" id="ed-reset" type="button">رجّع الأصل</button></div>
+    </div>
+
+    <aside class="ed-side">
+      <div class="ed-phone"><div class="pv"><main class="wrap" id="pv"></main></div></div>
+      <p class="ed-cap">المعاينة بتتغير وإنت بتكتب</p>
+    </aside>
+  </div>
+
+  <div class="ed-bar"><button class="ed-btn primary ed-save" type="button">محفوظ ✓</button></div>
+  <div class="ed-toast" id="ed-toast" role="status" aria-live="polite"></div>
+</div>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="edit.js"></script>
+
+</body>
+</html>
