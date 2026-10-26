@@ -18,8 +18,8 @@
     for (var i = 0; i < 12; i++) { s += ALPHA[a[i] % ALPHA.length]; if (i === 3 || i === 7) s += '-'; }
     return s;
   }
-  function cardUrl(slug) { return BASE + '?u=' + encodeURIComponent(slug); }
-  function editUrl(code) { return BASE + 'edit.html?k=' + code; }
+  function cardUrl(slug) { return CFG.siteUrl ? BASE + encodeURIComponent(slug) : BASE + '?u=' + encodeURIComponent(slug); }
+  function editUrl(code) { return BASE + (CFG.siteUrl ? 'edit?k=' : 'edit.html?k=') + code; }
   function slugify(s) {
     return String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30);
@@ -94,7 +94,7 @@
     $('#ad-count').textContent = rows.length;
     $('#ad-list').innerHTML = list.map(function (r) {
       return '<div class="ad-row" data-code="' + esc(r.code) + '">' +
-        '<div class="ad-who"><b>' + esc(r.name) + '</b><span dir="ltr">?u=' + esc(r.slug) + '</span></div>' +
+        '<div class="ad-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
         '<div class="ad-code" dir="ltr">' + esc(r.code.slice(0, 4)) + '-••••-••••</div>' +
         '<div class="ad-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
