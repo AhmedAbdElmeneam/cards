@@ -9,7 +9,7 @@
   var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 
   function toast(msg, bad) {
-    var t = $('#ad-toast'); t.textContent = msg; t.className = 'ed-toast show' + (bad ? ' bad' : '');
+    var t = $('#cp-toast'); t.textContent = msg; t.className = 'ed-toast show' + (bad ? ' bad' : '');
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.className = 'ed-toast'; }, 2800);
   }
   function newCode() {
@@ -69,15 +69,15 @@
   function showResult(name, slug, code) {
     var box = $('#n-result');
     box.innerHTML =
-      '<div class="ad-ok">✓ اتعمل ' + esc(name) + ' بكود جديد</div>' +
+      '<div class="cp-ok">✓ اتعمل ' + esc(name) + ' بكود جديد</div>' +
       linkRow('اكتب ده على الكارت', cardUrl(slug)) +
       linkRow('ابعت ده للعميل بس (لينك التعديل)', editUrl(code)) +
-      '<button type="button" class="ed-btn primary ad-msg">انسخ رسالة جاهزة للعميل</button>';
+      '<button type="button" class="ed-btn primary cp-msg">انسخ رسالة جاهزة للعميل</button>';
     box.hidden = false;
-    box.querySelector('.ad-msg').addEventListener('click', function (e) { copy(message(name, slug, code), e.currentTarget); });
+    box.querySelector('.cp-msg').addEventListener('click', function (e) { copy(message(name, slug, code), e.currentTarget); });
   }
   function linkRow(label, url) {
-    return '<div class="ad-link"><small>' + esc(label) + '</small><div><code dir="ltr">' + esc(url) + '</code><button type="button" class="ed-mini ad-cp" data-copy-text="' + esc(url) + '">نسخ</button></div></div>';
+    return '<div class="cp-link"><small>' + esc(label) + '</small><div><code dir="ltr">' + esc(url) + '</code><button type="button" class="ed-mini cp-cp" data-copy-text="' + esc(url) + '">نسخ</button></div></div>';
   }
 
   /* ----------------------------------------------------------------- list */
@@ -86,17 +86,17 @@
       rows = q.docs.map(function (d) { var x = d.data(); return { code: d.id, slug: x.slug, name: x.name || x.slug, at: x.createdAt ? x.createdAt.toMillis() : 0 }; })
         .sort(function (a, b) { return b.at - a.at; });
       draw();
-    }).catch(function () { $('#ad-list').innerHTML = '<p class="ed-empty">مقدرتش أجيب العملاء</p>'; });
+    }).catch(function () { $('#cp-list').innerHTML = '<p class="ed-empty">مقدرتش أجيب العملاء</p>'; });
   }
   function draw() {
-    var f = ($('#ad-search').value || '').toLowerCase().trim();
+    var f = ($('#cp-search').value || '').toLowerCase().trim();
     var list = rows.filter(function (r) { return !f || (r.name + ' ' + r.slug).toLowerCase().indexOf(f) > -1; });
-    $('#ad-count').textContent = rows.length;
-    $('#ad-list').innerHTML = list.map(function (r) {
-      return '<div class="ad-row" data-code="' + esc(r.code) + '">' +
-        '<div class="ad-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
-        '<div class="ad-code" dir="ltr">' + esc(r.code.slice(0, 4)) + '-••••-••••</div>' +
-        '<div class="ad-acts">' +
+    $('#cp-count').textContent = rows.length;
+    $('#cp-list').innerHTML = list.map(function (r) {
+      return '<div class="cp-row" data-code="' + esc(r.code) + '">' +
+        '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
+        '<div class="cp-code" dir="ltr">' + esc(r.code.slice(0, 4)) + '-••••-••••</div>' +
+        '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
         '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
         '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' +
@@ -107,7 +107,7 @@
   }
   function onListClick(e) {
     var b = e.target.closest('[data-act]'); if (!b) return;
-    var r = rows.filter(function (x) { return x.code === b.closest('.ad-row').dataset.code; })[0]; if (!r) return;
+    var r = rows.filter(function (x) { return x.code === b.closest('.cp-row').dataset.code; })[0]; if (!r) return;
     var act = b.dataset.act;
     if (act === 'card') return copy(cardUrl(r.slug), b);
     if (act === 'edit') return copy(editUrl(r.code), b);
@@ -138,29 +138,29 @@
     $('#n-name').addEventListener('input', function () { if (!$('#n-slug').dataset.touched) $('#n-slug').value = slugify($('#n-name').value); });
     $('#n-slug').addEventListener('input', function () { $('#n-slug').dataset.touched = '1'; });
     $('#n-form').addEventListener('submit', create);
-    $('#ad-search').addEventListener('input', draw);
-    $('#ad-list').addEventListener('click', onListClick);
-    document.addEventListener('click', function (e) { var b = e.target.closest('.ad-cp'); if (b) copy(b.dataset.copyText, b); });
+    $('#cp-search').addEventListener('input', draw);
+    $('#cp-list').addEventListener('click', onListClick);
+    document.addEventListener('click', function (e) { var b = e.target.closest('.cp-cp'); if (b) copy(b.dataset.copyText, b); });
 
     Store.init().then(function () {
-      if (Store.mode !== 'cloud') { $('#ad-login').hidden = false; $('#ad-login-msg').textContent = 'صفحة التحكم محتاجة Firebase متوصل في config.js.'; $('#ad-google').hidden = true; return; }
+      if (Store.mode !== 'cloud') { $('#cp-login').hidden = false; $('#cp-login-msg').textContent = 'صفحة التحكم محتاجة Firebase متوصل في config.js.'; $('#cp-google').hidden = true; return; }
       db = Store.db; auth = Store.auth;
-      $('#ad-google').addEventListener('click', function () {
+      $('#cp-google').addEventListener('click', function () {
         var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' });
         auth.signInWithPopup(p).catch(function (x) {
           if (/popup/i.test(x.code || '')) return auth.signInWithRedirect(p);
-          $('#ad-login-msg').textContent = 'محصلش دخول، جرّب تاني';
+          $('#cp-login-msg').textContent = 'محصلش دخول، جرّب تاني';
         });
       });
-      $('#ad-out').addEventListener('click', function () { auth.signOut(); });
+      $('#cp-out').addEventListener('click', function () { auth.signOut(); });
       auth.onAuthStateChanged(function (u) {
-        if (!u || u.isAnonymous) { $('#ad-app').hidden = true; $('#ad-login').hidden = false; return; }
-        $('#ad-user').textContent = u.email || '';
+        if (!u || u.isAnonymous) { $('#cp-app').hidden = true; $('#cp-login').hidden = false; return; }
+        $('#cp-user').textContent = u.email || '';
         // Probe: only the owner can list keys
         db.collection('keys').limit(1).get().then(function () {
-          $('#ad-login').hidden = true; $('#ad-app').hidden = false; load();
+          $('#cp-login').hidden = true; $('#cp-app').hidden = false; load();
         }, function () {
-          $('#ad-login-msg').textContent = 'الحساب ' + (u.email || '') + ' مش مسموحله يدخل هنا.';
+          $('#cp-login-msg').textContent = 'الحساب ' + (u.email || '') + ' مش مسموحله يدخل هنا.';
           auth.signOut();
         });
       });
