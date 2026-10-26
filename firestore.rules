@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The brand owner (admin.html). Only this Google account can create customers and codes.
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email == 'ahmedabdelmeneam69@gmail.com'
+          && request.auth.token.email_verified == true;
+    }
+
+    // keys/{CODE} = { slug: "mona" }   ← you create one per card you sell.
+    // Opening edit.html?k=CODE reads ONLY that one document; nobody can list the codes.
+    match /keys/{code} {
+      allow get: if request.auth != null;
+      allow list, create, update, delete: if isAdmin();
+    }
+
+    // sessions/{uid}: links this browser to the card its code unlocked.
+    function codeOpens(code, slug) {
+      return exists(/databases/$(database)/documents/keys/$(code))
+          && get(/databases/$(database)/documents/keys/$(code)).data.slug == slug;
+    }
+    match /sessions/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+                            && request.resource.data.keys().hasOnly(['slug', 'code'])
+                            && codeOpens(request.resource.data.code, request.resource.data.slug);
+      allow delete: if false;
+    }
+
+    // profiles/{slug}: what the card shows. Anyone can read; only a browser holding a valid code can write.
+    // Delete the key document and that edit link stops working immediately.
+    function canEdit(slug) {
+      let s = get(/databases/$(database)/documents/sessions/$(request.auth.uid));
+      return request.auth != null
+          && exists(/databases/$(database)/documents/sessions/$(request.auth.uid))
+          && s.data.slug == slug
+          && codeOpens(s.data.code, slug);
+    }
+    match /profiles/{slug} {
+      allow read: if true;
+      allow create, update: if isAdmin() || canEdit(slug);
+      allow delete: if isAdmin();
+    }
+  }
+}
