@@ -1,11 +1,11 @@
-# MENEAM cards: كروت NFC بصفحات تتعدل
+# SoulID cards: كروت NFC بصفحات تتعدل
 
 ## اللينكات
 | الصفحة | اللينك | مين يستخدمها |
 |---|---|---|
-| لوحة التحكم | `https://ahmedabdelmeneam.github.io/cards/admin.html` | إنت بس، بحساب Google بتاعك |
-| صفحة الكارت | `https://ahmedabdelmeneam.github.io/cards/?u=mona` | أي حد يلمس الكارت |
-| صفحة التعديل | `https://ahmedabdelmeneam.github.io/cards/edit.html?k=XXXX-XXXX-XXXX` | صاحب الكارت بس |
+| لوحة التحكم | `https://soulid.org/admin` | إنت بس، بحساب Google بتاعك |
+| صفحة الكارت | `https://soulid.org/mona` | أي حد يلمس الكارت |
+| صفحة التعديل | `https://soulid.org/edit?k=XXXX-XXXX-XXXX` | صاحب الكارت بس |
 
 ## لما تبيع كارت جديد
 1. افتح لوحة التحكم، وادخل بحساب Google.
@@ -26,7 +26,7 @@
 | `edit.html` / `edit.js` / `edit.css` | صفحة التعديل |
 | `admin.html` / `admin.js` / `admin.css` | لوحة التحكم |
 | `app.js` / `site.css` | الكود والتصميم المشترك |
-| `config.js` | اسم البراند وبيانات Firebase |
+| `config.js` | اسم البراند، والدومين، وبيانات Firebase |
 | `firestore.rules` | نسخة من قواعد الأمان اللي على Firebase |
 
 ## Firebase (مشروع `meneam-cards`، خطة Spark المجانية)
@@ -36,3 +36,7 @@
   - `sessions`: بتتعمل لوحدها لما حد يفتح لينك تعديل. متلمسهاش.
 - **Authentication**: Anonymous للعملاء، و Google ليك إنت.
 - لوحة التحكم مسموحة لإيميل `ahmedabdelmeneam69@gmail.com` بس، ودي محمية بالقواعد على السيرفر نفسه.
+
+## الاستضافة
+- الموقع متستضاف على **Cloudflare Pages** ومربوط بالـ repo ده: أي تعديل بتعمله هنا بيتنشر لوحده في دقيقة.
+- الدومين **soulid.org** متسجل في Cloudflare، والتجديد التلقائي لازم يفضل شغال.
