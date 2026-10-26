@@ -74,6 +74,9 @@
 
   function render(P, el) {
     P = P || {};
+    var TP = window.NFC_TPL;
+    if (TP && TP.has(P.template)) { el.setAttribute('data-tpl', P.template); TP.render(P, el); return; }
+    el.setAttribute('data-tpl', 'dev'); el.removeAttribute('dir');
     var i = 0, h = '';
     var av = P.avatar ? '<img src="' + esc(P.avatar) + '" alt="' + esc(P.name) + '">' : '<span class="ini">' + initials(P.name) + '</span>';
     h += '<section class="panel me rv" style="--i:' + (i++) + '"><div class="av">' + av + '</div><h1>' + esc(P.name || 'Your Name') + '</h1>' +
@@ -277,8 +280,12 @@ function startReveal(){
       var elapsed = (performance.now() - t0) / 1000;
       document.documentElement.style.setProperty('--base', Math.max(0.1, 2.15 - elapsed) + 's');
       if (P.name) document.title = P.name;
+      var tp = window.NFC_TPL && NFC_TPL.has(P.template) ? P.template : 'dev';
+      document.body.setAttribute('data-tpl', tp);
+      if (tp !== 'dev') NFC_TPL.bg(tp);
       render(P, el);
-      startCodeBg(); startReveal();
+      if (tp === 'dev') startCodeBg();
+      startReveal();
     });
   }
 
