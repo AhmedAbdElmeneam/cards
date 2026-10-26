@@ -1,0 +1,31 @@
+/* Seller dashboard: one column, the "new customer" card on top, the customer list below. Reuses editor tokens. */
+#ad-app,#ad-login{direction:rtl}
+.ad-main{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-block:24px 60px;
+ padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.ad-login-card{align-items:center;text-align:center}
+.ad-login-card .ed-logo{align-self:center}
+.ad-login-card .primary{width:100%}
+.ad-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:6px}
+.ad-form>div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ad-form .primary{padding:11px 18px}
+.ad-result{margin-top:10px;padding:14px;border-radius:14px;background:#f3fbf6;border:1px solid #bfeccf;display:flex;flex-direction:column;gap:10px}
+.ad-ok{font-weight:700;color:var(--e-ok)}
+.ad-link small{display:block;font-size:12.5px;color:var(--e-muted);margin-bottom:4px}
+.ad-link>div{display:flex;gap:8px;align-items:center}
+.ad-link code{flex:1;min-width:0;font-family:"JetBrains Mono",monospace;font-size:12.5px;background:#fff;border:1px solid var(--e-line);border-radius:9px;padding:8px 10px;overflow-wrap:anywhere;text-align:left}
+.ed-mini.wide,.ad-cp{width:auto;padding:0 10px;font-size:12.5px;white-space:nowrap}
+.ed-mini.confirm{color:var(--e-bad);border-color:#f3b6c7}
+.ad-msg{align-self:flex-start}
+.ad-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ad-head h2{margin:0}
+.ad-search{max-width:260px}
+.ad-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ad-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:12px;border:1px solid var(--e-line);border-radius:14px;background:#fcfcfe}
+.ad-who b{display:block;font-weight:600}
+.ad-who span{unicode-bidi:isolate;direction:ltr;text-align:right;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--e-muted)}
+.ad-code{unicode-bidi:isolate;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--e-muted);background:#f2f3f8;border-radius:6px;padding:3px 8px}
+.ad-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:640px){
+  .ad-form{grid-template-columns:1fr}
+  .ad-search{max-width:none;width:100%}
+}
