@@ -29,3 +29,4 @@
   .cp-form{grid-template-columns:1fr}
   .cp-search{max-width:none;width:100%}
 }
+.cp-del{margin-inline-start:auto}
