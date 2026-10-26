@@ -210,3 +210,4 @@ a.g-mem:hover{transform:translateY(-3px);box-shadow:0 18px 30px -22px rgba(15,26
 /* editor preview: no fixed layers, keep it calm */
 .pv[data-tpl]:not([data-tpl="dev"]) .wrap{padding-top:4px}
 @media (prefers-reduced-motion:reduce){.t-bg i,.t-bg b,.c-ring,.c-av,.k-vinyl,.k-beat svg,.k-seal{animation:none!important}}
+.c-av.t-ini{display:grid}
