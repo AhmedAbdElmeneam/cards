@@ -7,6 +7,9 @@
   var db, auth, rows = [];
   var BASE = (CFG.siteUrl || (location.origin + location.pathname.replace(/[^/]*$/, ''))).replace(/\/?$/, '/');
   var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var SKIN0 = { classic: 'aurora', couple: 'rose', grad: 'navy', dev: 'aurora' };
+  var TPLN = { classic: 'كلاسيك', couple: 'كابلز', grad: 'مشروع تخرج', dev: 'مطوّر' };
+  function tplSelect(cur) { return '<select class="ed-in cp-tpl" data-tplsel aria-label="القالب">' + Object.keys(TPLN).map(function (k) { return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + TPLN[k] + '</option>'; }).join('') + '</select>'; }
 
   function toast(msg, bad) {
     var t = $('#cp-toast'); t.textContent = msg; t.className = 'ed-toast show' + (bad ? ' bad' : '');
@@ -55,7 +58,10 @@
       code = c;
       var batch = db.batch(), ts = firebase.firestore.FieldValue.serverTimestamp();
       batch.set(db.collection('keys').doc(code), { slug: slug, name: name, createdAt: ts });
-      batch.set(db.collection('profiles').doc(slug), { name: name, brand: CFG.brand || '', skin: 'aurora', tagline: 'tap · connect · build', links: [], pay: [], contact: {}, createdAt: ts });
+      var tp = $('#n-tpl').value || 'classic', P0 = { name: name, template: tp, brand: CFG.brand || '', skin: SKIN0[tp] || 'aurora', tagline: tp === 'dev' ? 'tap · connect · build' : 'tap · connect · share', links: [], pay: [], contact: {}, createdAt: ts };
+      if (tp === 'couple') { P0.couple = { a: name, b: '', story: [] }; P0.gallery = []; }
+      if (tp === 'grad') { P0.project = { kind: 'grad', team: [] }; P0.gallery = []; }
+      batch.set(db.collection('profiles').doc(slug), P0);
       return batch.commit();
     }).then(function () {
       showResult(name, slug, code);
@@ -88,7 +94,7 @@
       res[1].docs.forEach(function (d) { var x = d.data(); (keys[x.slug] = keys[x.slug] || []).push({ code: d.id, at: x.createdAt ? x.createdAt.toMillis() : 0, name: x.name }); });
       rows = res[0].docs.map(function (d) {
         var x = d.data(), k = (keys[d.id] || []).sort(function (a, b) { return b.at - a.at; });
-        return { slug: d.id, name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
+        return { slug: d.id, tpl: x.template || 'dev', name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
                  at: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : (k[0] ? k[0].at : 0) };
       }).sort(function (a, b) { return b.at - a.at; });
       draw();
@@ -102,7 +108,7 @@
       var has = !!r.code;
       return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
-        '<div class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</div>' +
+        '<div class="cp-meta">' + tplSelect(r.tpl) + '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span></div>' +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
         (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
@@ -166,6 +172,14 @@
     $('#n-form').addEventListener('submit', create);
     $('#cp-search').addEventListener('input', draw);
     $('#cp-list').addEventListener('click', onListClick);
+    $('#cp-list').addEventListener('change', function (e) {
+      var sel = e.target.closest('[data-tplsel]'); if (!sel) return;
+      var slug = sel.closest('.cp-row').dataset.slug, tp = sel.value;
+      sel.disabled = true;
+      db.collection('profiles').doc(slug).update({ template: tp }).then(function () {
+        rows.forEach(function (r) { if (r.slug === slug) r.tpl = tp; }); toast('القالب اتغير لـ ' + TPLN[tp]);
+      }, function () { toast('محصلش، جرّب تاني', true); draw(); }).then(function () { sel.disabled = false; });
+    });
     document.addEventListener('click', function (e) { var b = e.target.closest('.cp-cp'); if (b) copy(b.dataset.copyText, b); });
 
     Store.init().then(function () {
