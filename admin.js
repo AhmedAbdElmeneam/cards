@@ -82,9 +82,15 @@
 
   /* ----------------------------------------------------------------- list */
   function load() {
-    return db.collection('keys').get().then(function (q) {
-      rows = q.docs.map(function (d) { var x = d.data(); return { code: d.id, slug: x.slug, name: x.name || x.slug, at: x.createdAt ? x.createdAt.toMillis() : 0 }; })
-        .sort(function (a, b) { return b.at - a.at; });
+    // Customers = every profile (so a customer whose code was cancelled still shows up and can be deleted)
+    return Promise.all([db.collection('profiles').get(), db.collection('keys').get()]).then(function (res) {
+      var keys = {};
+      res[1].docs.forEach(function (d) { var x = d.data(); (keys[x.slug] = keys[x.slug] || []).push({ code: d.id, at: x.createdAt ? x.createdAt.toMillis() : 0, name: x.name }); });
+      rows = res[0].docs.map(function (d) {
+        var x = d.data(), k = (keys[d.id] || []).sort(function (a, b) { return b.at - a.at; });
+        return { slug: d.id, name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
+                 at: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : (k[0] ? k[0].at : 0) };
+      }).sort(function (a, b) { return b.at - a.at; });
       draw();
     }).catch(function () { $('#cp-list').innerHTML = '<p class="ed-empty">مقدرتش أجيب العملاء</p>'; });
   }
@@ -93,30 +99,50 @@
     var list = rows.filter(function (r) { return !f || (r.name + ' ' + r.slug).toLowerCase().indexOf(f) > -1; });
     $('#cp-count').textContent = rows.length;
     $('#cp-list').innerHTML = list.map(function (r) {
-      return '<div class="cp-row" data-code="' + esc(r.code) + '">' +
+      var has = !!r.code;
+      return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
-        '<div class="cp-code" dir="ltr">' + esc(r.code.slice(0, 4)) + '-••••-••••</div>' +
+        '<div class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</div>' +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
-        '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
-        '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' +
+        (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
+               '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' : '') +
         '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>' +
-        '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' +
+        (has ? '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' : '') +
+        '<button type="button" class="ed-mini wide del cp-del" data-act="delete">حذف العميل</button>' +
         '</div></div>';
     }).join('') || '<p class="ed-empty">' + (rows.length ? 'مفيش نتايج' : 'لسه مفيش عملاء. اعمل أول واحد من فوق.') + '</p>';
   }
+  // Deletes the profile (with its photo), every edit code and every browser session of this customer.
+  function removeCustomer(r) {
+    return db.collection('sessions').where('slug', '==', r.slug).get().then(function (q) {
+      var refs = q.docs.map(function (d) { return d.ref; });
+      r.codes.forEach(function (c) { refs.push(db.collection('keys').doc(c)); });
+      refs.push(db.collection('profiles').doc(r.slug));
+      var chain = Promise.resolve();
+      for (var i = 0; i < refs.length; i += 450) (function (part) {
+        chain = chain.then(function () { var b = db.batch(); part.forEach(function (x) { b.delete(x); }); return b.commit(); });
+      })(refs.slice(i, i + 450));
+      return chain;
+    });
+  }
   function onListClick(e) {
     var b = e.target.closest('[data-act]'); if (!b) return;
-    var r = rows.filter(function (x) { return x.code === b.closest('.cp-row').dataset.code; })[0]; if (!r) return;
+    var r = rows.filter(function (x) { return x.slug === b.closest('.cp-row').dataset.slug; })[0]; if (!r) return;
     var act = b.dataset.act;
     if (act === 'card') return copy(cardUrl(r.slug), b);
     if (act === 'edit') return copy(editUrl(r.code), b);
     if (act === 'msg') return copy(message(r.name, r.slug, r.code), b);
     if (!b.classList.contains('confirm')) {
-      var o = b.textContent; b.classList.add('confirm'); b.textContent = 'متأكد؟';
-      setTimeout(function () { b.classList.remove('confirm'); b.textContent = o; }, 3000); return;
+      var o = b.textContent; b.classList.add('confirm');
+      b.textContent = act === 'delete' ? 'هيتمسح نهائياً، دوس تاني' : 'متأكد؟';
+      setTimeout(function () { b.classList.remove('confirm'); b.textContent = o; }, act === 'delete' ? 4000 : 3000); return;
     }
     b.disabled = true;
+    if (act === 'delete') {
+      removeCustomer(r).then(function () { toast('اتمسح ' + r.name + ' وكل بياناته'); $('#n-result').hidden = true; load(); },
+        function () { toast('محصلش الحذف، جرّب تاني', true); b.disabled = false; });
+    }
     if (act === 'revoke') {
       db.collection('keys').doc(r.code).delete().then(function () { toast('اتلغى. لينك التعديل القديم بطّل يشتغل، وصفحة الكارت لسه شغالة'); load(); }, function () { toast('محصلش', true); b.disabled = false; });
     }
@@ -124,7 +150,7 @@
       freeCode().then(function (c) {
         var batch = db.batch();
         batch.set(db.collection('keys').doc(c), { slug: r.slug, name: r.name, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-        batch.delete(db.collection('keys').doc(r.code));
+        r.codes.forEach(function (old) { batch.delete(db.collection('keys').doc(old)); });
         return batch.commit().then(function () { return c; });
       }).then(function (c) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
