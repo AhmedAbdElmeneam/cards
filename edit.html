@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Alexandria:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="edit.css">
+<link rel="stylesheet" href="tpl.css">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -47,30 +48,92 @@ body{margin:0} img{max-width:100%}
   <div class="ed-main">
     <div class="ed-form">
       <p class="ed-note" id="ed-note"></p>
+
+      <section class="ed-card" data-only="couple">
+        <h2><span>01</span>إنتوا الاتنين</h2>
+        <div class="ed-two">
+          <div><label for="f-ca">الاسم الأول</label><input class="ed-in" id="f-ca" dir="auto" placeholder="Ahmed"></div>
+          <div><label for="f-cb">الاسم التاني</label><input class="ed-in" id="f-cb" dir="auto" placeholder="Mona"></div>
+        </div>
+        <div class="ed-two">
+          <div><label for="f-since">تاريخكم (ارتباط، خطوبة، أو فرح)</label><input class="ed-in" id="f-since" type="date" dir="ltr"></div>
+          <div><label for="f-place">المكان (اختياري)</label><input class="ed-in" id="f-place" dir="auto" placeholder="Cairo"></div>
+        </div>
+        <small class="ed-hint">لو التاريخ لسه جاي (زي يوم الفرح)، الصفحة هتعدّ الأيام الفاضلة بدل الأيام اللي فاتت.</small>
+      </section>
+
       <section class="ed-card">
-        <h2><span>01</span>الصورة والاسم</h2>
+        <h2><span>01</span><b id="h-photo">الصورة والاسم</b></h2>
         <div class="ed-photo">
           <div class="ed-avatar" id="ed-avatar"></div>
           <div class="ed-photo-btns">
             <label class="ed-btn ghost" for="ed-photo">غيّر الصورة</label>
             <input id="ed-photo" type="file" accept="image/*" hidden>
             <button class="ed-link" id="ed-photo-del" type="button">شيل الصورة</button>
-            <small>الصورة بتتقص مربع لوحدها</small>
+            <small id="ph-hint">الصورة بتتقص مربع لوحدها</small>
           </div>
         </div>
-        <label for="f-name">الاسم</label><input class="ed-in" id="f-name" placeholder="Ahmed Abd El-Meneam">
-        <label for="f-status">الحالة (النقطة الخضرا)</label><input class="ed-in" id="f-status" placeholder="Open to new projects">
+        <div data-only="dev classic grad">
+          <label for="f-name" id="lb-name">الاسم</label><input class="ed-in" id="f-name" dir="auto" placeholder="Ahmed Abd El-Meneam">
+          <label for="f-status" id="lb-status">الحالة (النقطة الخضرا)</label><input class="ed-in" id="f-status" dir="auto" placeholder="Open to new projects">
+        </div>
+      </section>
+
+      <section class="ed-card" data-only="grad">
+        <h2><span>02</span>بيانات المشروع</h2>
+        <div class="ed-two">
+          <div><label for="f-kind">النوع</label><select class="ed-in" id="f-kind">
+            <option value="grad">مشروع تخرج</option><option value="master">رسالة ماجستير</option><option value="phd">رسالة دكتوراه</option><option value="research">بحث علمي</option></select></div>
+          <div><label for="f-year">السنة</label><input class="ed-in" id="f-year" dir="ltr" placeholder="2026"></div>
+        </div>
+        <div class="ed-two">
+          <div><label for="f-uni">الجامعة</label><input class="ed-in" id="f-uni" dir="auto" placeholder="Mansoura University"></div>
+          <div><label for="f-fac">الكلية أو القسم</label><input class="ed-in" id="f-fac" dir="auto" placeholder="Faculty of Computers"></div>
+        </div>
+        <div class="ed-two">
+          <div><label for="f-sup">المشرف</label><input class="ed-in" id="f-sup" dir="auto" placeholder="Dr. …"></div>
+          <div><label for="f-ddate">تاريخ المناقشة</label><input class="ed-in" id="f-ddate" type="date" dir="ltr"></div>
+        </div>
+        <label for="f-keys">كلمات مفتاحية (افصل بينهم بفاصلة)</label><input class="ed-in" id="f-keys" dir="auto" placeholder="AI, Flutter, Healthcare">
+        <label>فريق العمل</label>
+        <div id="ed-team" class="ed-list"></div>
+        <button class="ed-btn add" type="button" data-addo="team">+ ضيف عضو</button>
       </section>
 
       <section class="ed-card">
-        <h2><span>02</span>الوصف</h2>
-        <label for="f-bio">نبذة عنك</label>
+        <h2><span>02</span><b id="h-bio">الوصف</b></h2>
+        <label for="f-bio" id="lb-bio">نبذة عنك</label>
         <textarea class="ed-in" id="f-bio" rows="4" dir="auto"></textarea>
-        <small class="ed-hint">حط الكلمة بين نجمتين عشان تبقى بولد: <code>**Lawyer**</code></small>
-        <label for="f-term">سطر الكود الأسود (اختياري)</label><input class="ed-in" id="f-term" dir="ltr" placeholder="flutter run --release ahmed">
+        <small class="ed-hint">حط الكلمة بين نجمتين عشان تبقى بولد: <code>**كلمة**</code></small>
+        <div data-only="dev"><label for="f-term">سطر الكود الأسود (اختياري)</label><input class="ed-in" id="f-term" dir="ltr" placeholder="flutter run --release ahmed"></div>
       </section>
 
-      <section class="ed-card">
+      <section class="ed-card" data-only="couple">
+        <h2><span>03</span>أغنيتكم والجواب</h2>
+        <div class="ed-two">
+          <div><label for="f-songname">اسم الأغنية</label><input class="ed-in" id="f-songname" dir="auto" placeholder="Perfect · Ed Sheeran"></div>
+          <div><label for="f-song">لينك الأغنية</label><input class="ed-in" id="f-song" dir="ltr" placeholder="https://open.spotify.com/…"></div>
+        </div>
+        <label for="f-msg">الجواب (بيظهر لما حد يفتح الظرف)</label>
+        <textarea class="ed-in" id="f-msg" rows="5" dir="auto"></textarea>
+      </section>
+
+      <section class="ed-card" data-only="couple">
+        <h2><span>04</span>حكايتكم</h2>
+        <p class="ed-sub">أهم لحظاتكم بالترتيب: أول مرة اتقابلتوا، الخطوبة، الفرح…</p>
+        <div id="ed-story" class="ed-list"></div>
+        <button class="ed-btn add" type="button" data-addo="story">+ ضيف لحظة</button>
+      </section>
+
+      <section class="ed-card" data-only="couple grad classic">
+        <h2><span>05</span><b id="h-gal">صور</b></h2>
+        <p class="ed-sub">لحد 6 صور. بتتصغّر لوحدها عشان الصفحة تفتح بسرعة.</p>
+        <div id="ed-gal" class="ed-gal"></div>
+        <label class="ed-btn add" for="ed-galin">+ ضيف صور</label>
+        <input id="ed-galin" type="file" accept="image/*" multiple hidden>
+      </section>
+
+      <section class="ed-card" data-only="dev classic">
         <h2><span>03</span>الزرار الرئيسي</h2>
         <p class="ed-sub">الزرار الكبير الملون اللي فوق اللينكات. سيب اللينك فاضي لو مش عاوزه.</p>
         <div class="ed-two">
@@ -84,20 +147,20 @@ body{margin:0} img{max-width:100%}
       </section>
 
       <section class="ed-card">
-        <h2><span>04</span>السوشيال</h2>
+        <h2><span>04</span><b id="h-links">السوشيال</b></h2>
         <p class="ed-sub">اكتب اليوزر بس (زي <code dir="ltr">@ahmed</code>) أو الصق اللينك كامل. رتّبهم بالأسهم.</p>
         <div id="ed-links" class="ed-list"></div>
         <button class="ed-btn add" type="button" data-add="links">+ ضيف لينك</button>
       </section>
 
-      <section class="ed-card">
+      <section class="ed-card" data-only="dev classic">
         <h2><span>05</span>الدفع</h2>
         <p class="ed-sub">لينكات InstaPay أو telda أو أي لينك دفع.</p>
         <div id="ed-pay" class="ed-list"></div>
         <button class="ed-btn add" type="button" data-add="pay">+ ضيف لينك دفع</button>
       </section>
 
-      <section class="ed-card">
+      <section class="ed-card" data-only="dev classic grad">
         <h2><span>06</span>التواصل</h2>
         <div class="ed-two">
           <div><label for="f-phone">الموبايل</label><input class="ed-in" id="f-phone" dir="ltr" inputmode="tel"></div>
@@ -107,11 +170,15 @@ body{margin:0} img{max-width:100%}
 
       <section class="ed-card">
         <h2><span>07</span>الشكل</h2>
+        <div data-only="classic couple grad">
+          <label for="f-lang">لغة الصفحة</label>
+          <select class="ed-in" id="f-lang"><option value="en">English</option><option value="ar">عربي</option></select>
+        </div>
         <label>الألوان</label>
         <div class="ed-skins" id="ed-skins"></div>
         <div class="ed-two">
           <div><label for="f-brand">الاسم اللي تحت</label><input class="ed-in" id="f-brand" dir="ltr" placeholder="SoulID"></div>
-          <div><label for="f-tag">الجملة اللي تحت</label><input class="ed-in" id="f-tag" dir="ltr" placeholder="tap · connect · build"></div>
+          <div><label for="f-tag">الجملة اللي تحت</label><input class="ed-in" id="f-tag" dir="ltr" placeholder="tap · connect · share"></div>
         </div>
       </section>
 
@@ -119,7 +186,7 @@ body{margin:0} img{max-width:100%}
     </div>
 
     <aside class="ed-side">
-      <div class="ed-phone"><div class="pv"><main class="wrap" id="pv"></main></div></div>
+      <div class="ed-phone"><div class="pv" id="pvbox"><main class="wrap" id="pv"></main></div></div>
       <p class="ed-cap">المعاينة بتتغير وإنت بتكتب</p>
     </aside>
   </div>
@@ -129,6 +196,7 @@ body{margin:0} img{max-width:100%}
 </div>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="tpl.js"></script>
 <script src="edit.js"></script>
 
 </body>
