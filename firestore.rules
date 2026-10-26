@@ -26,7 +26,8 @@ service cloud.firestore {
       allow create, update: if request.auth != null && request.auth.uid == uid
                             && request.resource.data.keys().hasOnly(['slug', 'code'])
                             && codeOpens(request.resource.data.code, request.resource.data.slug);
-      allow delete: if false;
+      // only the owner can list and delete sessions (used when a customer is deleted)
+      allow list, delete: if isAdmin();
     }
 
     // profiles/{slug}: what the card shows. Anyone can read; only a browser holding a valid code can write.
