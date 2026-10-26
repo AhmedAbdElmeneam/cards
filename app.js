@@ -102,7 +102,7 @@
         (c.phone ? '<button class="cp" data-copy="' + esc(c.phone) + '">' + icon('phone') + '<span class="v">' + esc(c.phone) + '</span><span class="cl">copy</span></button>' : '') +
         (c.email ? '<button class="cp" data-copy="' + esc(c.email) + '">' + icon('mail') + '<span class="v">' + esc(c.email) + '</span><span class="cl">copy</span></button>' : '') + '</div>';
     }
-    h += '<div class="foot rv" style="--i:' + (i++) + '"><span class="m">' + esc(P.brand || CFG.brand || 'NFC') + '</span><span>' + esc(P.tagline || 'tap · connect · build') + '</span></div>';
+    h += '<div class="foot rv" style="--i:' + (i++) + '"><span class="m">' + esc((P.brand && P.brand !== 'MENEAM' ? P.brand : '') || CFG.brand || 'NFC') + '</span><span>' + esc(P.tagline || 'tap · connect · build') + '</span></div>';
     el.innerHTML = h;
     applySkin(P.skin);
   }
@@ -178,7 +178,10 @@
   function slugFromUrl() {
     var q = new URLSearchParams(location.search).get('u');
     var hsh = location.hash.replace(/^#/, '');
-    return (q || hsh || CFG.defaultSlug || 'demo').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    // pretty links: soulid.org/mona  (ignore page names and the old /cards/ folder)
+    var seg = decodeURIComponent(location.pathname.split('/').filter(Boolean).pop() || '');
+    if (/\.html?$/i.test(seg) || /^(index|edit|admin|cards)$/i.test(seg)) seg = '';
+    return (q || hsh || seg || CFG.defaultSlug || 'demo').toLowerCase().replace(/[^a-z0-9_-]/g, '');
   }
 
   /* ------------------------------------------------------------ page effects */
@@ -279,7 +282,7 @@ function startReveal(){
     });
   }
 
-  var DEFAULT = {"name": "Your Name", "status": "", "avatar": "", "bio": "This card has not been set up yet.", "terminal": "", "primary": {"type": "whatsapp", "value": ""}, "links": [], "pay": [], "contact": {}, "skin": "aurora", "brand": "MENEAM", "tagline": "tap · connect · build"};
+  var DEFAULT = {"name": "Your Name", "status": "", "avatar": "", "bio": "This card has not been set up yet.", "terminal": "", "primary": {"type": "whatsapp", "value": ""}, "links": [], "pay": [], "contact": {}, "skin": "aurora", "brand": "SoulID", "tagline": "tap · connect · build"};
 
   window.NFC = { CFG: CFG, TYPES: TYPES, SKINS: SKINS, ICONS: ICONS, icon: icon, esc: esc, render: render, applySkin: applySkin, Store: Store, slugFromUrl: slugFromUrl, boot: boot, DEFAULT: DEFAULT, hrefFor: hrefFor };
 })();
