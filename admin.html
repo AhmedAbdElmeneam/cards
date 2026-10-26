@@ -48,6 +48,8 @@ body{margin:0} img{max-width:100%}
       <form id="n-form" class="cp-form" autocomplete="off">
         <div><label for="n-name">اسم العميل</label><input class="ed-in" id="n-name" placeholder="منى علي" required></div>
         <div><label for="n-slug">الرابط (إنجليزي)</label><input class="ed-in" id="n-slug" dir="ltr" placeholder="mona" pattern="[a-z0-9-]{3,30}"></div>
+        <div><label for="n-tpl">القالب</label><select class="ed-in" id="n-tpl">
+          <option value="classic">كلاسيك</option><option value="couple">كابلز</option><option value="grad">مشروع تخرج / رسالة</option><option value="dev">مطوّر / برمجة</option></select></div>
         <button class="ed-btn primary" id="n-go" type="submit">اعمل عميل جديد</button>
       </form>
       <p class="ed-err" id="n-err" role="alert"></p>
@@ -63,6 +65,7 @@ body{margin:0} img{max-width:100%}
 </div>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="tpl.js"></script>
 <script src="admin.js"></script>
 
 </body>
