@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="tpl.css">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -22,10 +23,11 @@ body{margin:0} img{max-width:100%}
 <div class="mesh" aria-hidden="true"></div>
 <canvas id="code" aria-hidden="true"></canvas>
 <div class="veil" aria-hidden="true"></div>
-<div class="splash" aria-hidden="true"><div class="boot"><svg viewBox="0 0 150 150"><defs><linearGradient id="sg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="150" y2="150"><stop offset="0" stop-color="#2f6bff"/><stop offset=".5" stop-color="#7b4dff"/><stop offset="1" stop-color="#ff3d8b"/></linearGradient></defs><path class="pin" style="animation-delay:0.00s" d="M50 35V12"/><path class="pin" style="animation-delay:0.05s" d="M75 35V12"/><path class="pin" style="animation-delay:0.10s" d="M100 35V12"/><path class="pin" style="animation-delay:0.15s" d="M50 115V138"/><path class="pin" style="animation-delay:0.20s" d="M75 115V138"/><path class="pin" style="animation-delay:0.25s" d="M100 115V138"/><path class="pin" style="animation-delay:0.30s" d="M35 50H12"/><path class="pin" style="animation-delay:0.35s" d="M35 75H12"/><path class="pin" style="animation-delay:0.40s" d="M35 100H12"/><path class="pin" style="animation-delay:0.45s" d="M115 50H138"/><path class="pin" style="animation-delay:0.50s" d="M115 75H138"/><path class="pin" style="animation-delay:0.55s" d="M115 100H138"/><rect class="body" x="35" y="35" width="80" height="80" rx="12"/><rect class="core" x="58" y="58" width="34" height="34" rx="6"/></svg><div class="word">SoulID</div><div class="log">&gt; booting profile.dart</div></div></div>
+<div class="splash" aria-hidden="true"><div class="boot"><svg viewBox="0 0 150 150"><defs><linearGradient id="sg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="150" y2="150"><stop offset="0" stop-color="#2f6bff"/><stop offset=".5" stop-color="#7b4dff"/><stop offset="1" stop-color="#ff3d8b"/></linearGradient></defs><path class="pin" style="animation-delay:0.00s" d="M50 35V12"/><path class="pin" style="animation-delay:0.05s" d="M75 35V12"/><path class="pin" style="animation-delay:0.10s" d="M100 35V12"/><path class="pin" style="animation-delay:0.15s" d="M50 115V138"/><path class="pin" style="animation-delay:0.20s" d="M75 115V138"/><path class="pin" style="animation-delay:0.25s" d="M100 115V138"/><path class="pin" style="animation-delay:0.30s" d="M35 50H12"/><path class="pin" style="animation-delay:0.35s" d="M35 75H12"/><path class="pin" style="animation-delay:0.40s" d="M35 100H12"/><path class="pin" style="animation-delay:0.45s" d="M115 50H138"/><path class="pin" style="animation-delay:0.50s" d="M115 75H138"/><path class="pin" style="animation-delay:0.55s" d="M115 100H138"/><rect class="body" x="35" y="35" width="80" height="80" rx="12"/><rect class="core" x="58" y="58" width="34" height="34" rx="6"/></svg><div class="word">SoulID</div><div class="log">tap · connect · share</div></div></div>
 <main class="wrap" id="app" aria-live="polite"></main>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="tpl.js"></script>
 <script>NFC.boot();</script>
 
 </body>
