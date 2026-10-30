@@ -132,3 +132,6 @@ textarea.ed-in{resize:vertical;line-height:1.6}
 .ed-gi .ed-mini{position:absolute;top:5px;right:5px;width:26px;height:26px;background:rgba(255,255,255,.92)}
 .ed-card h2 b{font-weight:inherit}
 @media (max-width:560px){.ed-ofields{grid-template-columns:1fr}.ed-ofields>*{grid-column:1/-1}}
+
+.ed-logo{font-family:inherit!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--ink,#141628)!important;font-size:19px;font-weight:400}
+.ed-logo .sid-mk{fill:url(#sgl)}

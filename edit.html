@@ -6,9 +6,10 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#f4f5fb">
 <meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
-<title>Profile Editor</title>
+<title>SoulID · Editor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20rx%3D%2210%22%20fill%3D%22%23141628%22/%3E%3Cg%20transform%3D%22translate%283.2%202%29%20scale%28.9%29%22%20fill%3D%22%23fff%22%3E%3Ccircle%20cx%3D%2228.5%22%20cy%3D%2212.0%22%20r%3D%223.30%22/%3E%3Ccircle%20cx%3D%2226.0%22%20cy%3D%226.3%22%20r%3D%223.17%22/%3E%3Ccircle%20cx%3D%2220.0%22%20cy%3D%224.0%22%20r%3D%223.03%22/%3E%3Ccircle%20cx%3D%2214.0%22%20cy%3D%226.3%22%20r%3D%222.90%22/%3E%3Ccircle%20cx%3D%2211.5%22%20cy%3D%2212.0%22%20r%3D%222.77%22/%3E%3Ccircle%20cx%3D%2214.0%22%20cy%3D%2217.7%22%20r%3D%222.63%22/%3E%3Ccircle%20cx%3D%2220.0%22%20cy%3D%2220.0%22%20r%3D%222.50%22/%3E%3Ccircle%20cx%3D%2226.0%22%20cy%3D%2222.3%22%20r%3D%222.37%22/%3E%3Ccircle%20cx%3D%2228.5%22%20cy%3D%2228.0%22%20r%3D%222.23%22/%3E%3Ccircle%20cx%3D%2226.0%22%20cy%3D%2233.7%22%20r%3D%222.10%22/%3E%3Ccircle%20cx%3D%2220.0%22%20cy%3D%2236.0%22%20r%3D%221.97%22/%3E%3Ccircle%20cx%3D%2214.0%22%20cy%3D%2233.7%22%20r%3D%221.83%22/%3E%3Ccircle%20cx%3D%2211.5%22%20cy%3D%2228.0%22%20r%3D%221.70%22/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Alexandria:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Alexandria:wght@500;600;700&family=Great+Vibes&display=swap">
 <link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="edit.css">
 <link rel="stylesheet" href="tpl.css">
@@ -20,10 +21,10 @@ body{margin:0} img{max-width:100%}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}}
 </style>
 </head>
-<body class="ed">
+<body class="ed"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="sgl" gradientUnits="userSpaceOnUse" x1="8" y1="2" x2="32" y2="38"><stop offset="0" stop-color="#2f6bff"/><stop offset=".5" stop-color="#7b4dff"/><stop offset="1" stop-color="#ff3d8b"/></linearGradient></defs></svg>
 <div id="ed-lock" class="ed-login" hidden>
   <div class="ed-card ed-login-card">
-    <div class="ed-logo">SoulID</div>
+    <div class="ed-logo"><span class="sid"><svg class="sid-mk" viewBox="6 0 28 40" fill="currentColor" aria-hidden="true"><circle cx="28.5" cy="12.0" r="3.30"/><circle cx="26.0" cy="6.3" r="3.17"/><circle cx="20.0" cy="4.0" r="3.03"/><circle cx="14.0" cy="6.3" r="2.90"/><circle cx="11.5" cy="12.0" r="2.77"/><circle cx="14.0" cy="17.7" r="2.63"/><circle cx="20.0" cy="20.0" r="2.50"/><circle cx="26.0" cy="22.3" r="2.37"/><circle cx="28.5" cy="28.0" r="2.23"/><circle cx="26.0" cy="33.7" r="2.10"/><circle cx="20.0" cy="36.0" r="1.97"/><circle cx="14.0" cy="33.7" r="1.83"/><circle cx="11.5" cy="28.0" r="1.70"/></svg><span class="sid-wd">SoulID</span></span></div>
     <div class="ed-lock-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
     <h1>اللينك ده مش شغال</h1>
     <p id="lock-msg">لينك التعديل غلط أو اتلغى. افتحه من الرسالة اللي جاتلك مع الكارت بالظبط، أو كلّم صاحب البراند يبعتلك لينك جديد.</p>
@@ -32,7 +33,7 @@ body{margin:0} img{max-width:100%}
 
 <div id="ed-app" hidden>
   <header class="ed-top">
-    <div class="ed-brand"><span class="ed-logo">SoulID</span><span class="ed-title">محرر الصفحة</span></div>
+    <div class="ed-brand"><span class="ed-logo"><span class="sid"><svg class="sid-mk" viewBox="6 0 28 40" fill="currentColor" aria-hidden="true"><circle cx="28.5" cy="12.0" r="3.30"/><circle cx="26.0" cy="6.3" r="3.17"/><circle cx="20.0" cy="4.0" r="3.03"/><circle cx="14.0" cy="6.3" r="2.90"/><circle cx="11.5" cy="12.0" r="2.77"/><circle cx="14.0" cy="17.7" r="2.63"/><circle cx="20.0" cy="20.0" r="2.50"/><circle cx="26.0" cy="22.3" r="2.37"/><circle cx="28.5" cy="28.0" r="2.23"/><circle cx="26.0" cy="33.7" r="2.10"/><circle cx="20.0" cy="36.0" r="1.97"/><circle cx="14.0" cy="33.7" r="1.83"/><circle cx="11.5" cy="28.0" r="1.70"/></svg><span class="sid-wd">SoulID</span></span></span><span class="ed-title">محرر الصفحة</span></div>
     <span class="ed-mode" id="ed-mode"></span>
     <div class="ed-actions">
       <a class="ed-btn ghost" id="ed-view" href="index.html" target="_blank" rel="noopener">افتح الصفحة ↗</a>
