@@ -167,9 +167,8 @@ body[data-tpl="grad"]{--lg:#13203F}
 body[data-tpl="classic"] .splash{background:#f7f5f1}
 body[data-tpl="couple"] .splash{background:#fff6f3}
 body[data-tpl="grad"] .splash{background:#f6f8fc}
-.splash{transition:background-color .4s ease}
 .boot{gap:26px}
-.boot .s-lg{width:150px;height:auto;overflow:visible;color:var(--lg);transition:color .4s ease}
+.boot .s-lg{width:150px;height:auto;overflow:visible;color:var(--lg)}
 .boot .s-lg .sp{opacity:0;transform:translateX(-60px);animation:spIn .55s cubic-bezier(.2,.9,.25,1) forwards;animation-delay:calc(.08s + var(--d) * 90ms)}
 .boot .s-lg .s-word{clip-path:inset(0 100% 0 0);animation:wdIn 1s cubic-bezier(.5,0,.3,1) .6s forwards}
 .boot .log{border-right-color:var(--lg)}

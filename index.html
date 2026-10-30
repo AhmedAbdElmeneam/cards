@@ -11,7 +11,7 @@
 <meta name="theme-color" content="#141416">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800&family=DM+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="site.css?v=3599380f">
+<link rel="stylesheet" href="site.css?v=ff675776">
 <link rel="stylesheet" href="tpl.css?v=d03c28cf">
 <style>
 *,*::before,*::after{box-sizing:border-box}
@@ -22,7 +22,7 @@ body{margin:0} img{max-width:100%}
 </style>
 </head>
 <body>
-<script>(function(){window.__sg0=0;window.sidGo=function(){if(window.__sg0)return;window.__sg0=performance.now();document.body.classList.add("sg")};try{var q=new URLSearchParams(location.search).get("u"),h=location.hash.slice(1),s=location.pathname.split("/").filter(Boolean).pop()||"";if(/^(index|edit|admin|cards)(\.html)?$/i.test(s))s="";var g=(q||h||s||(window.NFC_CONFIG&&NFC_CONFIG.defaultSlug)||"ahmed").toLowerCase().replace(/[^a-z0-9_-]/g,"");var t=localStorage.getItem("sid-tpl:"+g);if(t){document.body.setAttribute("data-tpl",t);sidGo()}}catch(e){}setTimeout(sidGo,900)})()</script>
+<script>(function(){window.__sg0=0;window.sidGo=function(){if(window.__sg0)return;window.__sg0=performance.now();document.body.classList.add("sg")};function put(t){if(!t)return;if(document.body.getAttribute("data-tpl")!==t)document.body.setAttribute("data-tpl",t);sidGo()}try{var q=new URLSearchParams(location.search).get("u"),h=location.hash.slice(1),s=location.pathname.split("/").filter(Boolean).pop()||"";if(/^(index|edit|admin|cards)(\.html)?$/i.test(s))s="";var g=(q||h||s||"ahmed").toLowerCase().replace(/[^a-z0-9_-]/g,"");var t=null;try{t=localStorage.getItem("sid-tpl:"+g)}catch(e){}if(t)put(t);else fetch("https://firestore.googleapis.com/v1/projects/meneam-cards/databases/(default)/documents/profiles/"+g+"?mask.fieldPaths=template&key=AIzaSyCZdifRhDQvSyd2OGEVraoqWD0sR23gmZs").then(function(r){return r.ok?r.json():{}}).then(function(j){put((j.fields&&j.fields.template&&j.fields.template.stringValue)||"dev")},function(){sidGo()})}catch(e){}setTimeout(sidGo,3000)})()</script>
 <div class="prog" aria-hidden="true"></div>
 <div class="mesh" aria-hidden="true"></div>
 <canvas id="code" aria-hidden="true"></canvas>
