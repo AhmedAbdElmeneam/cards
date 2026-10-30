@@ -159,15 +159,22 @@ button.cp.ok .cl{background:var(--green);color:#fff}
 
 .av .ini{width:100%;height:100%;border-radius:14px;display:grid;place-items:center;background:#fff;font-family:var(--disp);font-weight:700;font-size:22px;color:var(--violet)}
 
-/* ---------- SoulID brand (dot-trail S + script) ---------- */
-.boot .sl{display:flex;align-items:center;gap:12px;color:var(--ink)}
-.boot .s-mk{width:44px;height:63px;overflow:visible}
-.boot .s-mk circle{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:dotIn .42s cubic-bezier(.3,1.6,.5,1) forwards;animation-delay:calc(.1s + var(--d) * 55ms)}
-.boot .s-wd{font-family:"Great Vibes",cursive;font-size:62px;line-height:1;padding:10px 6px 0 2px;color:var(--ink);clip-path:inset(-20% 100% -20% 0);animation:writeIn 1s cubic-bezier(.5,0,.3,1) .55s forwards}
-@keyframes dotIn{to{transform:scale(1)}}
-@keyframes writeIn{to{clip-path:inset(-20% -10% -20% 0)}}
-.sid{display:inline-flex;align-items:center;gap:.28em;color:inherit;vertical-align:middle}
-.sid-mk{height:1.05em;width:auto;flex:none}
-.sid-wd{font-family:"Great Vibes",cursive;font-weight:400;font-size:1.35em;line-height:1;padding-top:.12em;letter-spacing:0}
-.foot .m,.t-foot .m{font-family:"Great Vibes",cursive!important;font-weight:400!important;font-size:21px!important;letter-spacing:0!important;line-height:1}
-@media (prefers-reduced-motion:reduce){.boot .s-mk circle{animation:none;transform:none}.boot .s-wd{animation:none;clip-path:none}}
+/* ---------- SoulID logo: faceted S on top, signature underneath ---------- */
+:root{--lg:#141628}
+body[data-tpl="classic"]{--lg:#141416}
+body[data-tpl="couple"]{--lg:#B98877}
+body[data-tpl="grad"]{--lg:#13203F}
+body[data-tpl="classic"] .splash{background:#f7f5f1}
+body[data-tpl="couple"] .splash{background:#fff6f3}
+body[data-tpl="grad"] .splash{background:#f6f8fc}
+.splash{transition:background-color .4s ease}
+.boot{gap:26px}
+.boot .s-lg{width:150px;height:auto;overflow:visible;color:var(--lg);transition:color .4s ease}
+.boot .s-lg .sp{opacity:0;transform:translateX(-60px);animation:spIn .55s cubic-bezier(.2,.9,.25,1) forwards;animation-delay:calc(.08s + var(--d) * 90ms)}
+.boot .s-lg .s-word{clip-path:inset(0 100% 0 0);animation:wdIn 1s cubic-bezier(.5,0,.3,1) .6s forwards}
+.boot .log{border-right-color:var(--lg)}
+@keyframes spIn{to{opacity:1;transform:none}}
+@keyframes wdIn{to{clip-path:inset(0 -2% 0 0)}}
+.foot .m,.t-foot .m{display:inline-flex;align-items:center;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--lg)!important;opacity:.55}
+.sid-wd{height:17px;width:auto;display:block}
+@media (prefers-reduced-motion:reduce){.boot .s-lg .sp,.boot .s-lg .s-word{animation:none;opacity:1;transform:none;clip-path:none}}

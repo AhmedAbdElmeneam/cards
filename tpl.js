@@ -85,7 +85,7 @@
     return out;
   }
   function foot(P, i) {
-    return '<footer class="t-foot' + rv(i) + '"><span class="m">' + esc((P.brand && P.brand !== 'MENEAM' ? P.brand : '') || CFG.brand || 'SoulID') + '</span><span>' + esc(P.tagline || 'tap · connect · share') + '</span></footer>';
+    return '<footer class="t-foot' + rv(i) + '"><span class="m">' + (window.SIDM || esc)((P.brand && P.brand !== 'MENEAM' ? P.brand : '') || CFG.brand || 'SoulID') + '</span><span>' + esc(P.tagline || 'tap · connect · share') + '</span></footer>';
   }
   function photo(P, cls) {
     return P.avatar ? '<img class="' + cls + '" src="' + esc(P.avatar) + '" alt="">' : '<span class="' + cls + ' t-ini">' + initials(P.name) + '</span>';

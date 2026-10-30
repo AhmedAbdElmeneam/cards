@@ -133,5 +133,8 @@ textarea.ed-in{resize:vertical;line-height:1.6}
 .ed-card h2 b{font-weight:inherit}
 @media (max-width:560px){.ed-ofields{grid-template-columns:1fr}.ed-ofields>*{grid-column:1/-1}}
 
-.ed-logo{font-family:inherit!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--ink,#141628)!important;font-size:19px;font-weight:400}
-.ed-logo .sid-mk{fill:url(#sgl)}
+/* ---------- SoulID logo in editor + admin ---------- */
+.ed-logo{font:inherit!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#141416!important;display:inline-flex;line-height:0}
+.ed-logo .sid-stack{width:120px;height:auto;margin:6px 0 4px}
+.ed-brand .ed-logo .sid-sym{height:26px;width:auto}
+.ed-brand{align-items:center!important}

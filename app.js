@@ -105,7 +105,7 @@
         (c.phone ? '<button class="cp" data-copy="' + esc(c.phone) + '">' + icon('phone') + '<span class="v">' + esc(c.phone) + '</span><span class="cl">copy</span></button>' : '') +
         (c.email ? '<button class="cp" data-copy="' + esc(c.email) + '">' + icon('mail') + '<span class="v">' + esc(c.email) + '</span><span class="cl">copy</span></button>' : '') + '</div>';
     }
-    h += '<div class="foot rv" style="--i:' + (i++) + '"><span class="m">' + esc((P.brand && P.brand !== 'MENEAM' ? P.brand : '') || CFG.brand || 'NFC') + '</span><span>' + esc(P.tagline || 'tap · connect · build') + '</span></div>';
+    h += '<div class="foot rv" style="--i:' + (i++) + '"><span class="m">' + (window.SIDM || esc)((P.brand && P.brand !== 'MENEAM' ? P.brand : '') || CFG.brand || 'NFC') + '</span><span>' + esc(P.tagline || 'tap · connect · build') + '</span></div>';
     el.innerHTML = h;
     applySkin(P.skin);
   }
