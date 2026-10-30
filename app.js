@@ -277,11 +277,13 @@ function startReveal(){
     Store.init().then(function () { return Store.get(slug); }).catch(function () { return null; }).then(function (P) {
       P = P || DEFAULT;
       window.__P = P;
-      var elapsed = (performance.now() - t0) / 1000;
-      document.documentElement.style.setProperty('--base', Math.max(0.1, 2.15 - elapsed) + 's');
       if (P.name) document.title = P.name;
       var tp = window.NFC_TPL && NFC_TPL.has(P.template) ? P.template : 'dev';
       document.body.setAttribute('data-tpl', tp);
+      try { localStorage.setItem('sid-tpl:' + slug, tp); } catch (e) {}
+      if (window.sidGo) sidGo();
+      var elapsed = (performance.now() - (window.__sg0 || t0)) / 1000;
+      document.documentElement.style.setProperty('--base', Math.max(0.1, 2.15 - elapsed) + 's');
       if (tp !== 'dev') NFC_TPL.bg(tp);
       render(P, el);
       if (tp === 'dev') startCodeBg();

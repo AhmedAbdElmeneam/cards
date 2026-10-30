@@ -178,3 +178,4 @@ body[data-tpl="grad"] .splash{background:#f6f8fc}
 .foot .m,.t-foot .m{display:inline-flex;align-items:center;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--lg)!important;opacity:.55}
 .sid-wd{height:17px;width:auto;display:block}
 @media (prefers-reduced-motion:reduce){.boot .s-lg .sp,.boot .s-lg .s-word{animation:none;opacity:1;transform:none;clip-path:none}}
+body:not(.sg) .splash,body:not(.sg) .splash *{animation-play-state:paused!important}
