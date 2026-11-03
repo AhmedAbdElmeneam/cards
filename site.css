@@ -178,3 +178,17 @@ body[data-tpl="grad"] .splash{background:#f6f8fc}
 .sid-wd{height:17px;width:auto;display:block}
 @media (prefers-reduced-motion:reduce){.boot .s-lg .sp,.boot .s-lg .s-word{animation:none;opacity:1;transform:none;clip-path:none}}
 body:not(.sg) .splash,body:not(.sg) .splash *{animation-play-state:paused!important}
+
+/* ---------- payment sticker: logo flash, then straight to the shop's payment link ---------- */
+.splash .gy{display:none}
+html.pay,html.pay body{background:#141416}
+html.pay #app,html.pay .mesh,html.pay #code,html.pay .veil,html.pay .prog,html.pay .t-bg{display:none!important}
+html.pay .splash{background:#141416!important;animation:none!important;opacity:1;visibility:visible}
+html.pay .boot{animation:payIn .3s ease both!important;gap:22px}
+@keyframes payIn{from{opacity:0;transform:scale(.96)}}
+html.pay .boot .s-lg{color:#F2F1ED;width:120px}
+html.pay .boot .s-lg .sp,html.pay .boot .s-lg .s-word{animation:none!important;opacity:1;transform:none;clip-path:none}
+html.pay .boot .log{display:none}
+html.pay .splash .gy{display:block;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,241,237,.55);text-align:center}
+html.pay .gy-b,html.pay-none .gy-a{display:none}
+html.pay-none .gy-b{display:inline;text-transform:none;letter-spacing:.02em;font-size:13.5px}

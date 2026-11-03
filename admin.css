@@ -32,3 +32,9 @@
 .cp-del{margin-inline-start:auto}
 .cp-tpl{width:auto;font-size:12.5px;padding:5px 8px;border-radius:9px}
 .cp-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+.cp-paybox{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.cp-paybox label{font-size:12.5px;color:var(--e-muted,#6b7088)}
+.cp-payrow{display:flex;gap:8px}
+.cp-payrow .ed-in{flex:1;min-width:0;font-size:13px}
+.cp-paywarn{color:#c2410c;font-size:12px}

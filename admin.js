@@ -7,8 +7,8 @@
   var db, auth, rows = [];
   var BASE = (CFG.siteUrl || (location.origin + location.pathname.replace(/[^/]*$/, ''))).replace(/\/?$/, '/');
   var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  var SKIN0 = { classic: 'aurora', couple: 'rose', grad: 'navy', dev: 'aurora' };
-  var TPLN = { classic: 'كلاسيك', couple: 'كابلز', grad: 'مشروع تخرج', dev: 'مطوّر' };
+  var SKIN0 = { classic: 'aurora', couple: 'rose', grad: 'navy', dev: 'aurora', pay: 'aurora' };
+  var TPLN = { classic: 'كلاسيك', couple: 'كابلز', grad: 'مشروع تخرج', pay: 'دفع (محلات)', dev: 'مطوّر' };
   function tplSelect(cur) { return '<select class="ed-in cp-tpl" data-tplsel aria-label="القالب">' + Object.keys(TPLN).map(function (k) { return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + TPLN[k] + '</option>'; }).join('') + '</select>'; }
 
   function toast(msg, bad) {
@@ -61,6 +61,7 @@
       var tp = $('#n-tpl').value || 'classic', P0 = { name: name, template: tp, brand: CFG.brand || '', skin: SKIN0[tp] || 'aurora', tagline: tp === 'dev' ? 'tap · connect · build' : 'tap · connect · share', links: [], pay: [], contact: {}, createdAt: ts };
       if (tp === 'couple') { P0.couple = { a: name, b: '', story: [] }; P0.gallery = []; }
       if (tp === 'grad') { P0.project = { kind: 'grad', team: [] }; P0.gallery = []; }
+      if (tp === 'pay') P0.payUrl = '';
       batch.set(db.collection('profiles').doc(slug), P0);
       return batch.commit();
     }).then(function () {
@@ -94,7 +95,7 @@
       res[1].docs.forEach(function (d) { var x = d.data(); (keys[x.slug] = keys[x.slug] || []).push({ code: d.id, at: x.createdAt ? x.createdAt.toMillis() : 0, name: x.name }); });
       rows = res[0].docs.map(function (d) {
         var x = d.data(), k = (keys[d.id] || []).sort(function (a, b) { return b.at - a.at; });
-        return { slug: d.id, tpl: x.template || 'dev', name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
+        return { slug: d.id, tpl: x.template || 'dev', payUrl: x.payUrl || '', name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
                  at: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : (k[0] ? k[0].at : 0) };
       }).sort(function (a, b) { return b.at - a.at; });
       draw();
@@ -109,6 +110,8 @@
       return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
         '<div class="cp-meta">' + tplSelect(r.tpl) + '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span></div>' +
+        (r.tpl === 'pay' ? '<div class="cp-paybox"><label>لينك الدفع (InstaPay أو بوابة الدفع)</label><div class="cp-payrow"><input class="ed-in cp-payurl" dir="ltr" type="url" inputmode="url" placeholder="https://ipn.eg/…" value="' + esc(r.payUrl) + '">' +
+          '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' + (r.payUrl ? '' : '<small class="cp-paywarn">لسه مفيش لينك. الاستيكر هيقول للزبون إنه مش متظبط.</small>') + '</div>' : '') +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
         (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
@@ -139,6 +142,14 @@
     if (act === 'card') return copy(cardUrl(r.slug), b);
     if (act === 'edit') return copy(editUrl(r.code), b);
     if (act === 'msg') return copy(message(r.name, r.slug, r.code), b);
+    if (act === 'paysave') {
+      var inp = b.closest('.cp-row').querySelector('.cp-payurl'), u = (inp.value || '').trim();
+      if (u && !/^https:\/\/[^\s]+$/i.test(u)) { toast('اللينك لازم يبدأ بـ https://', true); inp.focus(); return; }
+      b.disabled = true;
+      db.collection('profiles').doc(r.slug).update({ payUrl: u }).then(function () { r.payUrl = u; toast(u ? 'اتحفظ. الاستيكر بقى بيفتح اللينك ده' : 'اتشال لينك الدفع'); draw(); },
+        function () { toast('محصلش، جرّب تاني', true); b.disabled = false; });
+      return;
+    }
     if (!b.classList.contains('confirm')) {
       var o = b.textContent; b.classList.add('confirm');
       b.textContent = act === 'delete' ? 'هيتمسح نهائياً، دوس تاني' : 'متأكد؟';
@@ -177,7 +188,7 @@
       var slug = sel.closest('.cp-row').dataset.slug, tp = sel.value;
       sel.disabled = true;
       db.collection('profiles').doc(slug).update({ template: tp }).then(function () {
-        rows.forEach(function (r) { if (r.slug === slug) r.tpl = tp; }); toast('القالب اتغير لـ ' + TPLN[tp]);
+        rows.forEach(function (r) { if (r.slug === slug) r.tpl = tp; }); toast('القالب اتغير لـ ' + TPLN[tp]); draw();
       }, function () { toast('محصلش، جرّب تاني', true); draw(); }).then(function () { sel.disabled = false; });
     });
     document.addEventListener('click', function (e) { var b = e.target.closest('.cp-cp'); if (b) copy(b.dataset.copyText, b); });

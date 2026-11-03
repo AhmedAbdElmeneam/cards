@@ -42,8 +42,10 @@ service cloud.firestore {
     match /profiles/{slug} {
       allow read: if true;
       allow create: if isAdmin() || canEdit(slug);
-      // customers can edit their page but not switch its template
-      allow update: if isAdmin() || (canEdit(slug) && request.resource.data.get('template', 'dev') == resource.data.get('template', 'dev'));
+      // customers can edit their page but not switch its template or change a shop's payment link
+      allow update: if isAdmin() || (canEdit(slug)
+                    && request.resource.data.get('template', 'dev') == resource.data.get('template', 'dev')
+                    && request.resource.data.get('payUrl', '') == resource.data.get('payUrl', ''));
       allow delete: if isAdmin();
     }
   }
