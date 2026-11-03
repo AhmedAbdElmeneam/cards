@@ -65,7 +65,7 @@
       batch.set(db.collection('profiles').doc(slug), P0);
       return batch.commit();
     }).then(function () {
-      showResult(name, slug, code);
+      showResult(name, slug, code, $('#n-tpl').value);
       $('#n-form').reset(); $('#n-slug').dataset.touched = '';
       load();
     }).catch(function (x) {
@@ -73,8 +73,14 @@
         (/permission/i.test(x.code || x.message) ? 'الحساب ده مش مسموحله يضيف عملاء' : 'محصلش، جرّب تاني');
     }).then(function () { btn.disabled = false; btn.textContent = 'اعمل عميل جديد'; });
   }
-  function showResult(name, slug, code) {
+  function showResult(name, slug, code, tp) {
     var box = $('#n-result');
+    if (tp === 'pay') {
+      box.innerHTML = '<div class="cp-ok">✓ اتعمل استيكر الدفع لـ ' + esc(name) + '</div>' +
+        linkRow('اكتب ده على الاستيكر، والكيو آر نفس اللينك', cardUrl(slug)) +
+        '<p class="cp-paynote">مفيش لينك تعديل للمحل. حط لينك الدفع من الخانة اللي في صف المحل تحت، والاستيكر هيفتح تطبيق الدفع على طول.</p>';
+      box.hidden = false; return;
+    }
     box.innerHTML =
       '<div class="cp-ok">✓ اتعمل ' + esc(name) + ' بكود جديد</div>' +
       linkRow('اكتب ده على الكارت', cardUrl(slug)) +
@@ -106,18 +112,18 @@
     var list = rows.filter(function (r) { return !f || (r.name + ' ' + r.slug).toLowerCase().indexOf(f) > -1; });
     $('#cp-count').textContent = rows.length;
     $('#cp-list').innerHTML = list.map(function (r) {
-      var has = !!r.code;
+      var has = !!r.code, pay = r.tpl === 'pay';
       return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
-        '<div class="cp-meta">' + tplSelect(r.tpl) + '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span></div>' +
+        '<div class="cp-meta">' + tplSelect(r.tpl) + (pay ? '' : '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span>') + '</div>' +
         (r.tpl === 'pay' ? '<div class="cp-paybox"><label>لينك الدفع (InstaPay أو بوابة الدفع)</label><div class="cp-payrow"><input class="ed-in cp-payurl" dir="ltr" type="url" inputmode="url" placeholder="https://ipn.eg/…" value="' + esc(r.payUrl) + '">' +
           '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' + (r.payUrl ? '' : '<small class="cp-paywarn">لسه مفيش لينك. الاستيكر هيقول للزبون إنه مش متظبط.</small>') + '</div>' : '') +
         '<div class="cp-acts">' +
-        '<button type="button" class="ed-mini wide" data-act="card">لينك الكارت</button>' +
-        (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
+        '<button type="button" class="ed-mini wide" data-act="card">' + (pay ? 'لينك الاستيكر' : 'لينك الكارت') + '</button>' +
+        (has && !pay ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
                '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' : '') +
-        '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>' +
-        (has ? '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' : '') +
+        (pay ? '' : '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>') +
+        (has && !pay ? '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' : '') +
         '<button type="button" class="ed-mini wide del cp-del" data-act="delete">حذف العميل</button>' +
         '</div></div>';
     }).join('') || '<p class="ed-empty">' + (rows.length ? 'مفيش نتايج' : 'لسه مفيش عملاء. اعمل أول واحد من فوق.') + '</p>';

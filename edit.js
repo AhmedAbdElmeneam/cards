@@ -279,6 +279,10 @@
 
   /* --------------------------------------------------------------- start */
   function startEditor(data) {
+    if (data && data.template === 'pay') {
+      $('#ed-lock h1').textContent = 'ده استيكر دفع';
+      return locked('الاستيكر ده بيفتح تطبيق الدفع على طول، ومفيهوش حاجة تتعدل. لو عايز تغيّر حساب الدفع، كلّم SoulID.');
+    }
     P = data ? clone(data) : clone(N.DEFAULT);
     $('#ed-app').hidden = false; $('#ed-lock').hidden = true;
     $('#ed-mode').textContent = Store.mode === 'cloud' ? 'أونلاين · ' + slug : 'وضع تجريبي · بيتحفظ على الجهاز ده بس';
