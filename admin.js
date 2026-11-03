@@ -32,7 +32,10 @@
     try { navigator.clipboard.writeText(text).then(ok, fb); } catch (e) { fb(); }
     function fb() { var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (x) { toast('انسخه يدوي', true); } document.body.removeChild(ta); }
   }
-  function message(name, slug, code) {
+  function message(name, slug, code, tp) {
+    if (tp === 'pay') return 'أهلاً ' + (name || '') + ' 👋\n' +
+      'استيكر الدفع بتاعك جاهز. أي حد يلمسه أو يصوّر الكود هيفتح تطبيق الدفع على طول.\n\n' +
+      'من اللينك ده تحط أو تغيّر لينك الدفع (InstaPay أو بوابة الدفع). خليه معاك ومتبعتهوش لحد:\n' + editUrl(code);
     return 'أهلاً ' + (name || '') + ' 👋\n' +
       'كارتك جاهز! أي حد يلمس الكارت هيفتح صفحتك:\n' + cardUrl(slug) + '\n\n' +
       'ولينك تعديل صفحتك (خليه معاك ومتبعتهوش لحد):\n' + editUrl(code);
@@ -78,8 +81,11 @@
     if (tp === 'pay') {
       box.innerHTML = '<div class="cp-ok">✓ اتعمل استيكر الدفع لـ ' + esc(name) + '</div>' +
         linkRow('اكتب ده على الاستيكر، والكيو آر نفس اللينك', cardUrl(slug)) +
-        '<p class="cp-paynote">مفيش لينك تعديل للمحل. حط لينك الدفع من الخانة اللي في صف المحل تحت، والاستيكر هيفتح تطبيق الدفع على طول.</p>';
-      box.hidden = false; return;
+        linkRow('ابعت ده لصاحب المحل بس (يحط منه لينك الدفع)', editUrl(code)) +
+        '<button type="button" class="ed-btn primary cp-msg">انسخ رسالة جاهزة لصاحب المحل</button>';
+      box.hidden = false;
+      box.querySelector('.cp-msg').addEventListener('click', function (e) { copy(message(name, slug, code, 'pay'), e.currentTarget); });
+      return;
     }
     box.innerHTML =
       '<div class="cp-ok">✓ اتعمل ' + esc(name) + ' بكود جديد</div>' +
@@ -115,15 +121,15 @@
       var has = !!r.code, pay = r.tpl === 'pay';
       return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
-        '<div class="cp-meta">' + tplSelect(r.tpl) + (pay ? '' : '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span>') + '</div>' +
+        '<div class="cp-meta">' + tplSelect(r.tpl) + '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span></div>' +
         (r.tpl === 'pay' ? '<div class="cp-paybox"><label>لينك الدفع (InstaPay أو بوابة الدفع)</label><div class="cp-payrow"><input class="ed-in cp-payurl" dir="ltr" type="url" inputmode="url" placeholder="https://ipn.eg/…" value="' + esc(r.payUrl) + '">' +
           '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' + (r.payUrl ? '' : '<small class="cp-paywarn">لسه مفيش لينك. الاستيكر هيقول للزبون إنه مش متظبط.</small>') + '</div>' : '') +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">' + (pay ? 'لينك الاستيكر' : 'لينك الكارت') + '</button>' +
-        (has && !pay ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
+        (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
                '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' : '') +
-        (pay ? '' : '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>') +
-        (has && !pay ? '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' : '') +
+        '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>' +
+        (has ? '<button type="button" class="ed-mini wide del" data-act="revoke">إلغاء الكود</button>' : '') +
         '<button type="button" class="ed-mini wide del cp-del" data-act="delete">حذف العميل</button>' +
         '</div></div>';
     }).join('') || '<p class="ed-empty">' + (rows.length ? 'مفيش نتايج' : 'لسه مفيش عملاء. اعمل أول واحد من فوق.') + '</p>';
@@ -147,7 +153,7 @@
     var act = b.dataset.act;
     if (act === 'card') return copy(cardUrl(r.slug), b);
     if (act === 'edit') return copy(editUrl(r.code), b);
-    if (act === 'msg') return copy(message(r.name, r.slug, r.code), b);
+    if (act === 'msg') return copy(message(r.name, r.slug, r.code, r.tpl), b);
     if (act === 'paysave') {
       var inp = b.closest('.cp-row').querySelector('.cp-payurl'), u = (inp.value || '').trim();
       if (u && !/^https:\/\/[^\s]+$/i.test(u)) { toast('اللينك لازم يبدأ بـ https://', true); inp.focus(); return; }

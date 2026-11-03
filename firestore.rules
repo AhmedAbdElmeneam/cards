@@ -45,7 +45,11 @@ service cloud.firestore {
       // customers can edit their page but not switch its template or change a shop's payment link
       allow update: if isAdmin() || (canEdit(slug)
                     && request.resource.data.get('template', 'dev') == resource.data.get('template', 'dev')
-                    && request.resource.data.get('payUrl', '') == resource.data.get('payUrl', ''));
+                    && ((resource.data.get('template', 'dev') == 'pay'
+                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payUrl', 'updatedAt'])
+                         && request.resource.data.get('payUrl', '').matches('^https://[^ ]+$'))
+                     || (resource.data.get('template', 'dev') != 'pay'
+                         && request.resource.data.get('payUrl', '') == resource.data.get('payUrl', ''))));
       allow delete: if isAdmin();
     }
   }

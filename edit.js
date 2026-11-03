@@ -279,10 +279,7 @@
 
   /* --------------------------------------------------------------- start */
   function startEditor(data) {
-    if (data && data.template === 'pay') {
-      $('#ed-lock h1').textContent = 'ده استيكر دفع';
-      return locked('الاستيكر ده بيفتح تطبيق الدفع على طول، ومفيهوش حاجة تتعدل. لو عايز تغيّر حساب الدفع، كلّم SoulID.');
-    }
+    if (data && data.template === 'pay') return payEditor(data);
     P = data ? clone(data) : clone(N.DEFAULT);
     $('#ed-app').hidden = false; $('#ed-lock').hidden = true;
     $('#ed-mode').textContent = Store.mode === 'cloud' ? 'أونلاين · ' + slug : 'وضع تجريبي · بيتحفظ على الجهاز ده بس';
@@ -326,6 +323,37 @@
     var h = location.hash.replace(/^#/, '');
     var c = (q || h || '').trim();
     return /^[A-Za-z0-9-]{8,40}$/.test(c) ? c.toUpperCase() : '';
+  }
+  /* Payment sticker: the only thing a shop can change is where the tap sends the customer. */
+  function payEditor(data) {
+    $('#ed-app').hidden = true; $('#ed-lock').hidden = false;
+    var card = $('#ed-lock .ed-login-card'), logo = card.querySelector('.ed-logo');
+    card.innerHTML = ''; card.appendChild(logo); card.classList.add('ed-paycard');
+    var w = document.createElement('div'); w.className = 'ed-payform';
+    w.innerHTML = '<h1 dir="auto">' + N.esc(data.name || 'استيكر الدفع') + '</h1>' +
+      '<p>أي حد يلمس الاستيكر أو يصوّر الكود هيفتح اللينك ده على طول ويدفع.</p>' +
+      '<label for="pay-url">لينك الدفع</label>' +
+      '<input class="ed-in" id="pay-url" type="url" inputmode="url" dir="ltr" autocomplete="off" placeholder="https://ipn.eg/…">' +
+      '<small>انسخه من تطبيق InstaPay (استلام فلوس) أو من بوابة الدفع بتاعتك. لازم يبدأ بـ https://</small>' +
+      '<button type="button" class="ed-btn primary" id="pay-save">احفظ</button>' +
+      '<a class="ed-btn" id="pay-test" target="_blank" rel="noopener">جرّب اللينك</a>' +
+      '<p class="ed-paymsg" id="pay-msg" role="status"></p>';
+    card.appendChild(w);
+    var inp = $('#pay-url'), btn = $('#pay-save'), test = $('#pay-test'), msg = $('#pay-msg');
+    var ok = function (u) { return /^https:\/\/[^\s]+$/i.test(u); };
+    var sync = function () { var u = inp.value.trim(); test.hidden = !ok(u); if (ok(u)) test.href = u; };
+    inp.value = data.payUrl || ''; sync();
+    inp.addEventListener('input', function () { sync(); msg.textContent = ''; msg.className = 'ed-paymsg'; });
+    btn.addEventListener('click', function () {
+      var u = inp.value.trim();
+      if (!ok(u)) { msg.textContent = 'اللينك لازم يبدأ بـ https:// ومن غير مسافات'; msg.className = 'ed-paymsg bad'; inp.focus(); return; }
+      btn.disabled = true; btn.textContent = 'بيتحفظ…';
+      Store.db.collection('profiles').doc(slug).update({ payUrl: u, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () {
+        msg.textContent = 'اتحفظ ✓ الاستيكر بقى بيفتح اللينك ده'; msg.className = 'ed-paymsg good';
+      }, function (e) {
+        msg.textContent = /permission/i.test(e && (e.code || e.message)) ? 'اللينك ده مش مسموحله يعدّل الاستيكر' : 'محصلش حفظ، جرّب تاني'; msg.className = 'ed-paymsg bad';
+      }).then(function () { btn.disabled = false; btn.textContent = 'احفظ'; });
+    });
   }
   function locked(msg) {
     $('#ed-app').hidden = true; $('#ed-lock').hidden = false;

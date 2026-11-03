@@ -133,6 +133,20 @@ textarea.ed-in{resize:vertical;line-height:1.6}
 .ed-card h2 b{font-weight:inherit}
 @media (max-width:560px){.ed-ofields{grid-template-columns:1fr}.ed-ofields>*{grid-column:1/-1}}
 
+/* payment sticker editor */
+#ed-lock .ed-paycard{align-items:stretch;text-align:start}
+#ed-lock .ed-paycard .ed-logo{align-self:center}
+.ed-payform{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.ed-payform h1{text-align:center}
+.ed-payform p{text-align:center}
+.ed-payform label{font-weight:600;font-size:14px;margin-top:6px}
+.ed-payform small{color:var(--e-muted);font-size:12.5px;line-height:1.6}
+.ed-payform .ed-btn{text-align:center;text-decoration:none}
+.ed-payform .primary{margin-top:6px}
+.ed-paymsg{min-height:1.4em;font-size:13.5px;margin:0}
+.ed-paymsg.good{color:#15803d}.ed-paymsg.bad{color:#b91c1c}
+.ed-payform [hidden]{display:none!important}
+
 /* ---------- SoulID logo in editor + admin ---------- */
 .ed-logo{font:inherit!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#141416!important;display:inline-flex;line-height:0}
 .ed-logo .sid-stack{width:120px;height:auto;margin:6px 0 4px}
