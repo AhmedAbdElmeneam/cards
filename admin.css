@@ -39,3 +39,6 @@
 .cp-payrow .ed-in{flex:1;min-width:0;font-size:13px}
 .cp-paywarn{color:#c2410c;font-size:12px}
 .cp-paynote{margin:8px 0 0;font-size:13px;color:var(--e-muted,#6b7088);line-height:1.6}
+.cp-paytabs{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px}
+.cp-paytabs label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.cp-paybox[data-mode="link"] .cp-payphone,.cp-paybox[data-mode="wallet"] .cp-payurl{display:none}

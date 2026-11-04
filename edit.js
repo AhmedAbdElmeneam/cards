@@ -325,31 +325,48 @@
     return /^[A-Za-z0-9-]{8,40}$/.test(c) ? c.toUpperCase() : '';
   }
   /* Payment sticker: the only thing a shop can change is where the tap sends the customer. */
+  function walletNum(v) {
+    var d = String(v || '').replace(/[٠-٩]/g, function (c) { return String(c.charCodeAt(0) - 1632); }).replace(/[۰-۹]/g, function (c) { return String(c.charCodeAt(0) - 1776); }).replace(/\D/g, '');
+    if (/^20(1\d{9})$/.test(d)) d = '0' + d.slice(2);
+    return /^01[0125]\d{8}$/.test(d) ? d : '';
+  }
   function payEditor(data) {
     $('#ed-app').hidden = true; $('#ed-lock').hidden = false;
     var card = $('#ed-lock .ed-login-card'), logo = card.querySelector('.ed-logo');
     card.innerHTML = ''; card.appendChild(logo); card.classList.add('ed-paycard');
-    var w = document.createElement('div'); w.className = 'ed-payform';
+    var mode0 = data.payMode || (data.payPhone && !data.payUrl ? 'wallet' : 'link');
+    var w = document.createElement('div'); w.className = 'ed-payform'; w.dataset.mode = mode0;
     w.innerHTML = '<h1 dir="auto">' + N.esc(data.name || 'استيكر الدفع') + '</h1>' +
-      '<p>أي حد يلمس الاستيكر أو يصوّر الكود هيفتح اللينك ده على طول ويدفع.</p>' +
-      '<label for="pay-url">لينك الدفع</label>' +
+      '<p>أي حد يلمس الاستيكر أو يصوّر الكود هيروح على طريقة الدفع اللي هتختارها هنا.</p>' +
+      '<div class="ed-paytabs" role="radiogroup"><button type="button" data-m="link">لينك دفع</button><button type="button" data-m="wallet">رقم محفظة</button></div>' +
+      '<div class="pm-link"><label for="pay-url">لينك الدفع</label>' +
       '<input class="ed-in" id="pay-url" type="url" inputmode="url" dir="ltr" autocomplete="off" placeholder="https://ipn.eg/…">' +
-      '<small>انسخه من تطبيق InstaPay (استلام فلوس) أو من بوابة الدفع بتاعتك. لازم يبدأ بـ https://</small>' +
+      '<small>انسخه من تطبيق InstaPay (استلام فلوس) أو من بوابة الدفع بتاعتك. الزبون هيتحوّل عليه على طول.</small>' +
+      '<a class="ed-btn" id="pay-test" target="_blank" rel="noopener">جرّب اللينك</a></div>' +
+      '<div class="pm-wallet"><label for="pay-phone">رقم المحفظة</label>' +
+      '<input class="ed-in" id="pay-phone" type="tel" inputmode="numeric" dir="ltr" autocomplete="off" placeholder="01xxxxxxxxx">' +
+      '<small>فودافون كاش أو اتصالات كاش أو أورنج كاش. الزبون هيشوف الرقم كبير، وهيتنسخ عنده عشان يحوّل من أي محفظة أو من InstaPay.</small></div>' +
       '<button type="button" class="ed-btn primary" id="pay-save">احفظ</button>' +
-      '<a class="ed-btn" id="pay-test" target="_blank" rel="noopener">جرّب اللينك</a>' +
       '<p class="ed-paymsg" id="pay-msg" role="status"></p>';
     card.appendChild(w);
-    var inp = $('#pay-url'), btn = $('#pay-save'), test = $('#pay-test'), msg = $('#pay-msg');
+    var inp = $('#pay-url'), ph = $('#pay-phone'), btn = $('#pay-save'), test = $('#pay-test'), msg = $('#pay-msg');
     var ok = function (u) { return /^https:\/\/[^\s]+$/i.test(u); };
+    var clear = function () { msg.textContent = ''; msg.className = 'ed-paymsg'; };
     var sync = function () { var u = inp.value.trim(); test.hidden = !ok(u); if (ok(u)) test.href = u; };
-    inp.value = data.payUrl || ''; sync();
-    inp.addEventListener('input', function () { sync(); msg.textContent = ''; msg.className = 'ed-paymsg'; });
+    var setMode = function (m) { w.dataset.mode = m; w.querySelectorAll('[data-m]').forEach(function (x) { x.classList.toggle('on', x.dataset.m === m); x.setAttribute('aria-pressed', x.dataset.m === m); }); clear(); };
+    inp.value = data.payUrl || ''; ph.value = data.payPhone || ''; sync(); setMode(mode0);
+    w.querySelectorAll('[data-m]').forEach(function (x) { x.addEventListener('click', function () { setMode(x.dataset.m); }); });
+    inp.addEventListener('input', function () { sync(); clear(); }); ph.addEventListener('input', clear);
     btn.addEventListener('click', function () {
-      var u = inp.value.trim();
-      if (!ok(u)) { msg.textContent = 'اللينك لازم يبدأ بـ https:// ومن غير مسافات'; msg.className = 'ed-paymsg bad'; inp.focus(); return; }
+      var m = w.dataset.mode, u = inp.value.trim(), raw = ph.value.trim(), num = walletNum(raw);
+      var bad = function (t, el) { msg.textContent = t; msg.className = 'ed-paymsg bad'; el.focus(); };
+      if (m === 'link' && !ok(u)) return bad('اللينك لازم يبدأ بـ https:// ومن غير مسافات', inp);
+      if (m === 'wallet' && !num) return bad('رقم المحفظة لازم يبقى 11 رقم ويبدأ بـ 01', ph);
+      if (u && !ok(u)) u = '';
       btn.disabled = true; btn.textContent = 'بيتحفظ…';
-      Store.db.collection('profiles').doc(slug).update({ payUrl: u, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () {
-        msg.textContent = 'اتحفظ ✓ الاستيكر بقى بيفتح اللينك ده'; msg.className = 'ed-paymsg good';
+      Store.db.collection('profiles').doc(slug).update({ payMode: m, payUrl: u, payPhone: num, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () {
+        if (num) ph.value = num;
+        msg.textContent = m === 'wallet' ? 'اتحفظ ✓ الاستيكر هيعرض الرقم ده وينسخه للزبون' : 'اتحفظ ✓ الاستيكر بقى بيفتح اللينك ده'; msg.className = 'ed-paymsg good';
       }, function (e) {
         msg.textContent = /permission/i.test(e && (e.code || e.message)) ? 'اللينك ده مش مسموحله يعدّل الاستيكر' : 'محصلش حفظ، جرّب تاني'; msg.className = 'ed-paymsg bad';
       }).then(function () { btn.disabled = false; btn.textContent = 'احفظ'; });

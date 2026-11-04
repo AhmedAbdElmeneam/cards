@@ -146,6 +146,11 @@ textarea.ed-in{resize:vertical;line-height:1.6}
 .ed-paymsg{min-height:1.4em;font-size:13.5px;margin:0}
 .ed-paymsg.good{color:#15803d}.ed-paymsg.bad{color:#b91c1c}
 .ed-payform [hidden]{display:none!important}
+.ed-paytabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:12px;background:var(--e-soft,#f1f0f6);margin-top:4px}
+.ed-paytabs button{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:9px;padding:9px;background:transparent;color:var(--e-muted);cursor:pointer}
+.ed-paytabs button.on{background:#fff;color:var(--e-ink);box-shadow:0 1px 3px rgba(20,20,40,.12)}
+.ed-payform .pm-link,.ed-payform .pm-wallet{display:flex;flex-direction:column;gap:10px}
+.ed-payform[data-mode="link"] .pm-wallet,.ed-payform[data-mode="wallet"] .pm-link{display:none}
 
 /* ---------- SoulID logo in editor + admin ---------- */
 .ed-logo{font:inherit!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#141416!important;display:inline-flex;line-height:0}

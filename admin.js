@@ -46,6 +46,21 @@
     }, function () { toast('مقدرتش أحمّل مولّد الكيو آر، اتأكد من النت', true); })
       .then(function () { b.disabled = false; });
   }
+  function walletNum(v) {
+    var d = String(v || '').replace(/[٠-٩]/g, function (c) { return String(c.charCodeAt(0) - 1632); }).replace(/[۰-۹]/g, function (c) { return String(c.charCodeAt(0) - 1776); }).replace(/\D/g, '');
+    if (/^20(1\d{9})$/.test(d)) d = '0' + d.slice(2);
+    return /^01[0125]\d{8}$/.test(d) ? d : '';
+  }
+  function payBox(r) {
+    var w = r.payMode === 'wallet', ready = w ? !!walletNum(r.payPhone) : !!r.payUrl;
+    return '<div class="cp-paybox" data-mode="' + (w ? 'wallet' : 'link') + '">' +
+      '<div class="cp-paytabs"><label><input type="radio" name="pm-' + esc(r.slug) + '" value="link"' + (w ? '' : ' checked') + '> لينك دفع (InstaPay أو بوابة)</label>' +
+      '<label><input type="radio" name="pm-' + esc(r.slug) + '" value="wallet"' + (w ? ' checked' : '') + '> رقم محفظة (فودافون كاش وغيره)</label></div>' +
+      '<div class="cp-payrow"><input class="ed-in cp-payurl" dir="ltr" type="url" inputmode="url" placeholder="https://ipn.eg/…" value="' + esc(r.payUrl) + '">' +
+      '<input class="ed-in cp-payphone" dir="ltr" type="tel" inputmode="numeric" placeholder="01xxxxxxxxx" value="' + esc(r.payPhone) + '">' +
+      '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' +
+      (ready ? '' : '<small class="cp-paywarn">لسه مش متظبط. الاستيكر هيقول للزبون إنه مش جاهز.</small>') + '</div>';
+  }
   function editUrl(code) { return BASE + (CFG.siteUrl ? 'edit?k=' : 'edit.html?k=') + code; }
   function slugify(s) {
     return String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
@@ -88,7 +103,7 @@
       var tp = $('#n-tpl').value || 'classic', P0 = { name: name, template: tp, brand: CFG.brand || '', skin: SKIN0[tp] || 'aurora', tagline: tp === 'dev' ? 'tap · connect · build' : 'tap · connect · share', links: [], pay: [], contact: {}, createdAt: ts };
       if (tp === 'couple') { P0.couple = { a: name, b: '', story: [] }; P0.gallery = []; }
       if (tp === 'grad') { P0.project = { kind: 'grad', team: [] }; P0.gallery = []; }
-      if (tp === 'pay') P0.payUrl = '';
+      if (tp === 'pay') { P0.payMode = 'link'; P0.payUrl = ''; P0.payPhone = ''; }
       batch.set(db.collection('profiles').doc(slug), P0);
       return batch.commit();
     }).then(function () {
@@ -131,7 +146,7 @@
       res[1].docs.forEach(function (d) { var x = d.data(); (keys[x.slug] = keys[x.slug] || []).push({ code: d.id, at: x.createdAt ? x.createdAt.toMillis() : 0, name: x.name }); });
       rows = res[0].docs.map(function (d) {
         var x = d.data(), k = (keys[d.id] || []).sort(function (a, b) { return b.at - a.at; });
-        return { slug: d.id, tpl: x.template || 'dev', payUrl: x.payUrl || '', name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
+        return { slug: d.id, tpl: x.template || 'dev', payUrl: x.payUrl || '', payPhone: x.payPhone || '', payMode: x.payMode || (x.payPhone && !x.payUrl ? 'wallet' : 'link'), name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
                  at: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : (k[0] ? k[0].at : 0) };
       }).sort(function (a, b) { return b.at - a.at; });
       draw();
@@ -146,8 +161,7 @@
       return '<div class="cp-row" data-slug="' + esc(r.slug) + '">' +
         '<div class="cp-who"><b>' + esc(r.name) + '</b><span dir="ltr">/' + esc(r.slug) + '</span></div>' +
         '<div class="cp-meta">' + tplSelect(r.tpl) + '<span class="cp-code" dir="ltr">' + (has ? esc(r.code.slice(0, 4)) + '-••••-••••' : 'no code') + '</span></div>' +
-        (r.tpl === 'pay' ? '<div class="cp-paybox"><label>لينك الدفع (InstaPay أو بوابة الدفع)</label><div class="cp-payrow"><input class="ed-in cp-payurl" dir="ltr" type="url" inputmode="url" placeholder="https://ipn.eg/…" value="' + esc(r.payUrl) + '">' +
-          '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' + (r.payUrl ? '' : '<small class="cp-paywarn">لسه مفيش لينك. الاستيكر هيقول للزبون إنه مش متظبط.</small>') + '</div>' : '') +
+        (r.tpl === 'pay' ? payBox(r) : '') +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">' + (pay ? 'لينك الاستيكر' : 'لينك الكارت') + '</button>' +
         (pay ? '<button type="button" class="ed-mini wide" data-act="qr">تنزيل الكيو آر</button>' : '') +
@@ -181,10 +195,14 @@
     if (act === 'edit') return copy(editUrl(r.code), b);
     if (act === 'msg') return copy(message(r.name, r.slug, r.code, r.tpl), b);
     if (act === 'paysave') {
-      var inp = b.closest('.cp-row').querySelector('.cp-payurl'), u = (inp.value || '').trim();
+      var box = b.closest('.cp-paybox'), mode = box.dataset.mode, inp = box.querySelector('.cp-payurl'), ph = box.querySelector('.cp-payphone');
+      var u = (inp.value || '').trim(), raw = (ph.value || '').trim(), num = walletNum(raw);
       if (u && !/^https:\/\/[^\s]+$/i.test(u)) { toast('اللينك لازم يبدأ بـ https://', true); inp.focus(); return; }
+      if (raw && !num) { toast('رقم المحفظة لازم يبقى 11 رقم ويبدأ بـ 01', true); ph.focus(); return; }
+      if (mode === 'wallet' && !num) { toast('اكتب رقم المحفظة', true); ph.focus(); return; }
       b.disabled = true;
-      db.collection('profiles').doc(r.slug).update({ payUrl: u }).then(function () { r.payUrl = u; toast(u ? 'اتحفظ. الاستيكر بقى بيفتح اللينك ده' : 'اتشال لينك الدفع'); draw(); },
+      db.collection('profiles').doc(r.slug).update({ payMode: mode, payUrl: u, payPhone: num }).then(function () { r.payMode = mode; r.payUrl = u; r.payPhone = num;
+        toast(mode === 'wallet' ? 'اتحفظ. الاستيكر هيعرض رقم المحفظة وينسخه' : (u ? 'اتحفظ. الاستيكر بقى بيفتح اللينك ده' : 'اتشال لينك الدفع')); draw(); },
         function () { toast('محصلش، جرّب تاني', true); b.disabled = false; });
       return;
     }
@@ -222,6 +240,7 @@
     $('#cp-search').addEventListener('input', draw);
     $('#cp-list').addEventListener('click', onListClick);
     $('#cp-list').addEventListener('change', function (e) {
+      if (e.target.matches('.cp-paytabs input')) { e.target.closest('.cp-paybox').dataset.mode = e.target.value; return; }
       var sel = e.target.closest('[data-tplsel]'); if (!sel) return;
       var slug = sel.closest('.cp-row').dataset.slug, tp = sel.value;
       sel.disabled = true;

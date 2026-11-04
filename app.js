@@ -275,7 +275,7 @@ function startReveal(){
     var t0 = performance.now(), el = document.getElementById('app');
     var slug = slugFromUrl();
     Store.init().then(function () { return Store.get(slug); }).catch(function () { return null; }).then(function (P) {
-      if (P && P.template === 'pay') { if (window.sidPay) sidPay(P.payUrl); return; }
+      if (P && P.template === 'pay') { if (window.sidPay) sidPay(P.payUrl, P.payPhone, P.payMode, P.name); return; }
       P = P || DEFAULT;
       window.__P = P;
       if (P.name) document.title = P.name;

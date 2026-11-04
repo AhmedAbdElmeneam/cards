@@ -192,3 +192,17 @@ html.pay .boot .log{display:none}
 html.pay .splash .gy{display:block;font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,241,237,.55);text-align:center}
 html.pay .gy-b,html.pay-none .gy-a{display:none}
 html.pay-none .gy-b{display:inline;text-transform:none;letter-spacing:.02em;font-size:13.5px}
+.splash .gw{display:none}
+html.pay-wallet .boot .s-lg{width:84px}
+html.pay-wallet .splash .gw{display:flex;flex-direction:column;align-items:center;gap:12px;order:2;text-align:center;color:#F2F1ED;font-family:"IBM Plex Sans Arabic",var(--sans),sans-serif;padding:0 24px}
+html.pay-wallet .splash .gy{order:3;margin-top:14px}
+.gw-n{font-size:15px;font-weight:600;opacity:.75;letter-spacing:.02em}
+.gw-num{font:700 34px/1.1 var(--mono,ui-monospace),monospace;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#F2F1ED;background:none;border:0;padding:4px 8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gw-ok{font-size:14px;font-weight:600;color:#8fd19e;visibility:hidden;min-height:1.3em}
+html.pay-copied .gw-ok{visibility:visible}
+.gw-b{font:inherit;font-weight:600;font-size:15px;background:#F2F1ED;color:#141416;border:0;border-radius:999px;padding:13px 30px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.gw-b:active{transform:scale(.97)}
+.gw-b2,html.pay-copied .gw-b1{display:none}
+html.pay-copied .gw-b2{display:inline}
+html.pay-copied .gw-b{background:transparent;color:#F2F1ED;box-shadow:inset 0 0 0 1px rgba(242,241,237,.35)}
+.gw-h{font-size:13px;line-height:1.75;opacity:.62;max-width:300px}
