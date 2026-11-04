@@ -22,6 +22,30 @@
     return s;
   }
   function cardUrl(slug) { return CFG.siteUrl ? BASE + encodeURIComponent(slug) : BASE + '?u=' + encodeURIComponent(slug); }
+  /* Print-ready QR for a payment sticker: plain black on white, medium error correction, 4-module quiet zone. */
+  var qrLib = null;
+  function loadQR() {
+    if (window.qrcode) return Promise.resolve();
+    return qrLib || (qrLib = new Promise(function (ok, no) {
+      var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+      s.onload = ok; s.onerror = function () { qrLib = null; no(); }; document.head.appendChild(s);
+    }));
+  }
+  function qrDownload(slug, b) {
+    b.disabled = true;
+    loadQR().then(function () {
+      var q = qrcode(0, 'M'); q.addData(cardUrl(slug)); q.make();
+      var n = q.getModuleCount(), m = 4, s = n + m * 2, d = '';
+      for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) if (q.isDark(y, x)) d += 'M' + (x + m) + ' ' + (y + m) + 'h1v1h-1z';
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + s + ' ' + s + '" width="20mm" height="20mm" shape-rendering="crispEdges">' +
+        '<rect width="' + s + '" height="' + s + '" fill="#fff"/><path fill="#141416" d="' + d + '"/></svg>';
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      a.download = 'soulid-' + slug + '-qr.svg'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      toast('نزل الكيو آر بتاع ' + slug + '. ابعته للمطبعة زي ما هو');
+    }, function () { toast('مقدرتش أحمّل مولّد الكيو آر، اتأكد من النت', true); })
+      .then(function () { b.disabled = false; });
+  }
   function editUrl(code) { return BASE + (CFG.siteUrl ? 'edit?k=' : 'edit.html?k=') + code; }
   function slugify(s) {
     return String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
@@ -126,6 +150,7 @@
           '<button type="button" class="ed-mini wide" data-act="paysave">احفظ</button></div>' + (r.payUrl ? '' : '<small class="cp-paywarn">لسه مفيش لينك. الاستيكر هيقول للزبون إنه مش متظبط.</small>') + '</div>' : '') +
         '<div class="cp-acts">' +
         '<button type="button" class="ed-mini wide" data-act="card">' + (pay ? 'لينك الاستيكر' : 'لينك الكارت') + '</button>' +
+        (pay ? '<button type="button" class="ed-mini wide" data-act="qr">تنزيل الكيو آر</button>' : '') +
         (has ? '<button type="button" class="ed-mini wide" data-act="edit">لينك التعديل</button>' +
                '<button type="button" class="ed-mini wide" data-act="msg">الرسالة</button>' : '') +
         '<button type="button" class="ed-mini wide" data-act="rotate">كود جديد</button>' +
@@ -152,6 +177,7 @@
     var r = rows.filter(function (x) { return x.slug === b.closest('.cp-row').dataset.slug; })[0]; if (!r) return;
     var act = b.dataset.act;
     if (act === 'card') return copy(cardUrl(r.slug), b);
+    if (act === 'qr') return qrDownload(r.slug, b);
     if (act === 'edit') return copy(editUrl(r.code), b);
     if (act === 'msg') return copy(message(r.name, r.slug, r.code, r.tpl), b);
     if (act === 'paysave') {
