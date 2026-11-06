@@ -46,10 +46,12 @@ service cloud.firestore {
       allow update: if isAdmin() || (canEdit(slug)
                     && request.resource.data.get('template', 'dev') == resource.data.get('template', 'dev')
                     && ((resource.data.get('template', 'dev') == 'pay'
-                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payUrl', 'payPhone', 'payMode', 'updatedAt'])
-                         && request.resource.data.get('payUrl', '').matches('^(https://[^ ]+)?$')
-                         && request.resource.data.get('payPhone', '').matches('^(01[0125][0-9]{8})?$')
-                         && request.resource.data.get('payMode', 'link') in ['link', 'wallet'])
+                         && ((resource.data.get('payMode', 'link') == 'wallet'
+                              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payPhone', 'updatedAt'])
+                              && request.resource.data.get('payPhone', '').matches('^01[0125][0-9]{8}$'))
+                          || (resource.data.get('payMode', 'link') != 'wallet'
+                              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payUrl', 'updatedAt'])
+                              && request.resource.data.get('payUrl', '').matches('^https://[^ ]+$'))))
                      || (resource.data.get('template', 'dev') != 'pay'
                          && request.resource.data.get('payUrl', '') == resource.data.get('payUrl', '')
                          && request.resource.data.get('payPhone', '') == resource.data.get('payPhone', ''))));

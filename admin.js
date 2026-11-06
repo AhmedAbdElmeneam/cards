@@ -73,8 +73,9 @@
   }
   function message(name, slug, code, tp) {
     if (tp === 'pay') return 'أهلاً ' + (name || '') + ' 👋\n' +
-      'استيكر الدفع بتاعك جاهز. أي حد يلمسه أو يصوّر الكود هيفتح تطبيق الدفع على طول.\n\n' +
-      'من اللينك ده تحط أو تغيّر لينك الدفع (InstaPay أو بوابة الدفع). خليه معاك ومتبعتهوش لحد:\n' + editUrl(code);
+      'استيكر الدفع بتاعك جاهز. أي حد يلمسه أو يصوّر الكود هيروح على الدفع على طول.\n\n' +
+      'لينك الاستيكر (ده اللي الزبون بيفتحه):\n' + cardUrl(slug) + '\n\n' +
+      'لينك التعديل، منه تغيّر بيانات الدفع. خليه معاك ومتبعتهوش لحد:\n' + editUrl(code);
     return 'أهلاً ' + (name || '') + ' 👋\n' +
       'كارتك جاهز! أي حد يلمس الكارت هيفتح صفحتك:\n' + cardUrl(slug) + '\n\n' +
       'ولينك تعديل صفحتك (خليه معاك ومتبعتهوش لحد):\n' + editUrl(code);
@@ -146,7 +147,7 @@
       res[1].docs.forEach(function (d) { var x = d.data(); (keys[x.slug] = keys[x.slug] || []).push({ code: d.id, at: x.createdAt ? x.createdAt.toMillis() : 0, name: x.name }); });
       rows = res[0].docs.map(function (d) {
         var x = d.data(), k = (keys[d.id] || []).sort(function (a, b) { return b.at - a.at; });
-        return { slug: d.id, tpl: x.template || 'dev', payUrl: x.payUrl || '', payPhone: x.payPhone || '', payMode: x.payMode || (x.payPhone && !x.payUrl ? 'wallet' : 'link'), name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
+        return { slug: d.id, tpl: x.template || 'dev', payUrl: x.payUrl || '', payPhone: x.payPhone || '', payMode: x.payMode === 'wallet' ? 'wallet' : 'link', name: x.name || (k[0] && k[0].name) || d.id, code: k[0] ? k[0].code : '', codes: k.map(function (y) { return y.code; }),
                  at: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : (k[0] ? k[0].at : 0) };
       }).sort(function (a, b) { return b.at - a.at; });
       draw();

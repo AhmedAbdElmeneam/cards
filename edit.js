@@ -334,11 +334,10 @@
     $('#ed-app').hidden = true; $('#ed-lock').hidden = false;
     var card = $('#ed-lock .ed-login-card'), logo = card.querySelector('.ed-logo');
     card.innerHTML = ''; card.appendChild(logo); card.classList.add('ed-paycard');
-    var mode0 = data.payMode || (data.payPhone && !data.payUrl ? 'wallet' : 'link');
+    var mode0 = data.payMode === 'wallet' ? 'wallet' : 'link';
     var w = document.createElement('div'); w.className = 'ed-payform'; w.dataset.mode = mode0;
     w.innerHTML = '<h1 dir="auto">' + N.esc(data.name || 'استيكر الدفع') + '</h1>' +
-      '<p>أي حد يلمس الاستيكر أو يصوّر الكود هيروح على طريقة الدفع اللي هتختارها هنا.</p>' +
-      '<div class="ed-paytabs" role="radiogroup"><button type="button" data-m="link">لينك دفع</button><button type="button" data-m="wallet">رقم محفظة</button></div>' +
+      '<p>' + (mode0 === 'wallet' ? 'أي حد يلمس الاستيكر أو يصوّر الكود هيشوف رقم المحفظة ده ويتنسخ عنده.' : 'أي حد يلمس الاستيكر أو يصوّر الكود هيفتح لينك الدفع ده على طول.') + '</p>' +
       '<div class="pm-link"><label for="pay-url">لينك الدفع</label>' +
       '<input class="ed-in" id="pay-url" type="url" inputmode="url" dir="ltr" autocomplete="off" placeholder="https://ipn.eg/…">' +
       '<small>انسخه من تطبيق InstaPay (استلام فلوس) أو من بوابة الدفع بتاعتك. الزبون هيتحوّل عليه على طول.</small>' +
@@ -353,18 +352,17 @@
     var ok = function (u) { return /^https:\/\/[^\s]+$/i.test(u); };
     var clear = function () { msg.textContent = ''; msg.className = 'ed-paymsg'; };
     var sync = function () { var u = inp.value.trim(); test.hidden = !ok(u); if (ok(u)) test.href = u; };
-    var setMode = function (m) { w.dataset.mode = m; w.querySelectorAll('[data-m]').forEach(function (x) { x.classList.toggle('on', x.dataset.m === m); x.setAttribute('aria-pressed', x.dataset.m === m); }); clear(); };
-    inp.value = data.payUrl || ''; ph.value = data.payPhone || ''; sync(); setMode(mode0);
-    w.querySelectorAll('[data-m]').forEach(function (x) { x.addEventListener('click', function () { setMode(x.dataset.m); }); });
+    inp.value = data.payUrl || ''; ph.value = data.payPhone || ''; sync();
     inp.addEventListener('input', function () { sync(); clear(); }); ph.addEventListener('input', clear);
     btn.addEventListener('click', function () {
       var m = w.dataset.mode, u = inp.value.trim(), raw = ph.value.trim(), num = walletNum(raw);
       var bad = function (t, el) { msg.textContent = t; msg.className = 'ed-paymsg bad'; el.focus(); };
       if (m === 'link' && !ok(u)) return bad('اللينك لازم يبدأ بـ https:// ومن غير مسافات', inp);
       if (m === 'wallet' && !num) return bad('رقم المحفظة لازم يبقى 11 رقم ويبدأ بـ 01', ph);
-      if (u && !ok(u)) u = '';
+      var upd = m === 'wallet' ? { payPhone: num } : { payUrl: u };
+      upd.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
       btn.disabled = true; btn.textContent = 'بيتحفظ…';
-      Store.db.collection('profiles').doc(slug).update({ payMode: m, payUrl: u, payPhone: num, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () {
+      Store.db.collection('profiles').doc(slug).update(upd).then(function () {
         if (num) ph.value = num;
         msg.textContent = m === 'wallet' ? 'اتحفظ ✓ الاستيكر هيعرض الرقم ده وينسخه للزبون' : 'اتحفظ ✓ الاستيكر بقى بيفتح اللينك ده'; msg.className = 'ed-paymsg good';
       }, function (e) {
