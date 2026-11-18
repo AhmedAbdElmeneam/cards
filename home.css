@@ -207,3 +207,19 @@ html.home .boot .log{color:rgba(242,241,237,.6);border-right-color:#F2F1ED}
   .pb.pay .ob svg.qr{width:76px;height:76px}
   .hf{flex-direction:column}
 }
+
+/* real template screenshots inside the phones */
+#home .sc.shot,#home .scr.shot{padding:0;background:#0d0d0f}
+#home .shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top center}
+#home .hp .scr.shot{height:100%}
+
+/* product cards drawn from the brand book: no names, logo + NFC only */
+.pv .ob .hn{position:absolute;right:14px;bottom:12px;left:auto;width:22px;height:22px;opacity:.75}
+.pv .ob svg.lg{width:78px}
+.pb.biz .ob{background:radial-gradient(120% 90% at 30% 20%,#232327,#121214 60%,#0b0b0c);color:#6f6e74}
+.pb.biz .ob .hn{color:#5f5e64}
+.pb.cpl .ob{background:radial-gradient(110% 120% at 75% 10%,#6a1f2e 0%,#4a1421 45%,#2a0810 100%);color:#d9b79c}
+.pb.cpl .ob svg.lg{position:static;width:80px}
+.pb.grd .ob{background-color:#13203f;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px),radial-gradient(110% 120% at 20% 10%,#22366a,#13203f 60%,#0b1430);background-size:14px 14px,14px 14px,auto;color:#7f8fb5}
+.pb.grd .ob svg.lg{position:absolute;left:16px;top:14px;width:38px}
+.pb.grd .ob .cap{position:absolute;right:16px;top:14px;width:30px;height:30px}
