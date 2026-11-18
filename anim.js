@@ -10,7 +10,10 @@ var css='#home .hb{transition:transform .25s cubic-bezier(.2,.8,.2,1),background
 +'#home .hb.dark::after{background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%)}'
 +'#home .hb:hover::after{transform:translateX(120%);transition:transform .7s ease}'
 +'#home .hb:hover svg{animation:sWig .5s ease}@keyframes sWig{30%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}}'
-+'.sb{color:#f2f1ed;position:fixed;inset-inline:0;top:0;z-index:40;background:rgba(20,20,22,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(242,241,237,.08);transform:translateY(-100%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}'
++'.sb{--bg:rgba(20,20,22,.9);--fg:#f2f1ed;--ln:rgba(242,241,237,.35);color:var(--fg);position:fixed;inset-inline:0;top:0;z-index:40;background:var(--bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 color-mix(in srgb,var(--ln) 40%,transparent);transform:translateY(-100%);transition:transform .4s cubic-bezier(.2,.8,.2,1),background-color .5s ease,color .5s ease}'
++'.sb[data-t=b]{--bg:rgba(242,241,237,.9);--fg:#22211e;--ln:rgba(34,33,30,.3)}.sb[data-t=s]{--bg:rgba(230,228,223,.9);--fg:#22211e;--ln:rgba(34,33,30,.3)}'
++'.sb[data-t=c]{--bg:rgba(59,13,24,.92);--fg:#f3dcd3;--ln:rgba(212,168,152,.55)}.sb[data-t=g]{--bg:rgba(15,26,51,.92);--fg:#dbe2f0;--ln:rgba(174,186,211,.5)}'
++'#home .sb .mk{color:inherit}#home .sb .hb.ghost{color:inherit;box-shadow:inset 0 0 0 1.5px var(--ln);transition:transform .25s cubic-bezier(.2,.8,.2,1),color .5s,box-shadow .5s}#home .sb .hb.ghost:hover{box-shadow:inset 0 0 0 1.5px var(--fg)}'
 +'.sb.on{transform:none}.sb .ht{padding:9px 0}#home .sb .hb{min-height:38px;padding:0 16px}.sb .ht .mk svg{height:28px}.sb .ht .mk .wd{height:17px}'
 +'.hw li::before{transition:transform .35s cubic-bezier(.2,.8,.2,1)}.hw li:hover::before{transform:translateY(-6px)}'
 +'.hw li::after{transform:scaleX(0);transform-origin:right}.hw li.on::after{transform:none;transition:transform 1s cubic-bezier(.6,0,.2,1) .35s}'
@@ -34,6 +37,13 @@ if(hero&&top){var sb=document.createElement('div');sb.className='sb';sb.setAttri
   var x=document.createElement('div');x.className='hx';x.appendChild(top.cloneNode(true));sb.appendChild(x);
   sb.querySelectorAll('a').forEach(function(a){a.tabIndex=-1});H.appendChild(sb);
   new IntersectionObserver(function(e){sb.classList.toggle('on',!e[0].isIntersecting)},{rootMargin:'-60% 0px 0px 0px'}).observe(hero)}
+/* the bar and the browser chrome take the colours of the section under them */
+var TH={hh:['d','#141416'],hw:['s','#e6e4df'],biz:['b','#f2f1ed'],cpl:['c','#3b0d18'],grd:['g','#0f1a33'],pay:['s','#e6e4df'],hq:['s','#e6e4df'],he:['d','#141416']};
+var secs=[].slice.call(H.querySelectorAll('section')),metas=document.querySelectorAll('meta[name=theme-color]'),cur='',tq=0;
+function theme(){tq=0;var y=sb?sb.offsetHeight:60,k='hh';for(var i=0;i<secs.length;i++){var r=secs[i].getBoundingClientRect();if(r.top<=y&&r.bottom>y){var c=secs[i].classList;k=c.contains('pb')?c[1]:c[0];break}}
+  if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)k='he';
+  if(k===cur||!TH[k])return;cur=k;if(sb)sb.setAttribute('data-t',TH[k][0]);metas.forEach(function(m){m.setAttribute('content',TH[k][1])})}
+addEventListener('scroll',function(){if(!tq)tq=requestAnimationFrame(theme)},{passive:true});theme();
 if(R)return;
 
 /* reveals: each group staggers its own children */
